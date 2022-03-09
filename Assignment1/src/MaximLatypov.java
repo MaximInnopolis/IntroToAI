@@ -24,7 +24,7 @@ public class MaximLatypov {
         String scenario = "";
 
         try{
-            FileReader fileReader = new FileReader("C:\\Users\\Max\\Favorites\\Innopolis\\Year 2\\4th Semester\\Intro to AI\\Assignment1\\src\\input.txt");
+            FileReader fileReader = new FileReader("C:\\Users\\Max\\OneDrive\\Документы\\GitHub\\IntroToAI\\Assignment1\\src\\input.txt");
             BufferedReader reader = new BufferedReader(fileReader);
             input = reader.readLine();
             scenario = reader.readLine();
