@@ -1,0 +1,18 @@
+The goals of the game are:
+1)Find book
+2)Find exit
+3)Not to get caught
+
+How to reach these goals in abstract:
+1)If there is no way to achieve the book or/and exit
+we should find cloak and try again with decreased range of inspectors' observation field
+
+Do we know the location of the following:
+1)Book - NO
+2)Exit - YES
+3)Cloak - NO
+
+Cloak could be anywhere but not inside the range of inspectors' observation field (even in the exit zone)
+Exit and book could be anywhere not inside the range of inspectors' observation field and not in the same zone
+
+Input file with 2 strings given
