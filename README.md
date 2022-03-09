@@ -1,3 +1,3 @@
 # IntroToAI
  
-Homewwork for Artificial Intelligence course
+Homework for Artificial Intelligence course
