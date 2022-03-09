@@ -22,6 +22,8 @@ public class MaximLatypov {
 
         String input = "";
         String scenario = "";
+        boolean haveBook = false;
+        boolean haveCloak = false;
 
         try{
             FileReader fileReader = new FileReader("C:\\Users\\Max\\OneDrive\\Документы\\GitHub\\IntroToAI\\Assignment1\\src\\input.txt");
@@ -51,6 +53,12 @@ public class MaximLatypov {
         MaximLatypov Exit = new MaximLatypov(input.charAt(31), input.charAt(33));
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
+
+        isInBookCell(Harry,Book, haveBook);
+        isInExitCell(Harry,Exit);
+        isInCloakCell(Harry,Cloak, haveCloak);
+        isInFilchZone(Harry,Filch, haveCloak);
+        isInCatZone(Harry,Cat,haveCloak);
         System.out.println("-> This is the place where output ends");
     }
 
@@ -91,45 +99,105 @@ public class MaximLatypov {
 
     public static void findLogicError(MaximLatypov Harry, MaximLatypov Filch, MaximLatypov Cat, MaximLatypov Book, MaximLatypov Cloak, MaximLatypov Exit){
 
-        if (Math.sqrt(Math.pow((int)Harry.getX() - (int)Filch.getX(), 2) + Math.pow((int)Harry.getY() - (int)Filch.getY(), 2)) <= Math.sqrt(8)){
+        if (Math.sqrt(Math.pow((int)Harry.getX() - (int)Filch.getX(), 2) + Math.pow((int)Harry.getY() - (int)Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Harry is already in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Book.getX() - (int)Filch.getX(), 2) + Math.pow((int)Book.getY() - (int)Filch.getY(), 2)) <= Math.sqrt(8)){
+        if (Math.sqrt(Math.pow((int)Book.getX() - (int)Filch.getX(), 2) + Math.pow((int)Book.getY() - (int)Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Book is in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Cloak.getX() - (int)Filch.getX(), 2) + Math.pow((int)Cloak.getY() - (int)Filch.getY(), 2)) <= Math.sqrt(8)){
+        if (Math.sqrt(Math.pow((int)Cloak.getX() - (int)Filch.getX(), 2) + Math.pow((int)Cloak.getY() - (int)Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Cloak is in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Exit.getX() - (int)Filch.getX(), 2) + Math.pow((int)Exit.getY() - (int)Filch.getY(), 2)) <= Math.sqrt(8)){
+        if (Math.sqrt(Math.pow((int)Exit.getX() - (int)Filch.getX(), 2) + Math.pow((int)Exit.getY() - (int)Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Exit is in inspector's zone");
             System.exit(0);
         }
 
 
-        if (Math.sqrt(Math.pow((int)Harry.getX() - (int)Cat.getX(), 2) + Math.pow((int)Harry.getY() - (int)Cat.getY(), 2)) <= 1){
+        if (Math.sqrt(Math.pow((int)Harry.getX() - (int)Cat.getX(), 2) + Math.pow((int)Harry.getY() - (int)Cat.getY(), 2)) == 1){
             System.out.println("Error occurred, invalid input: Harry is already in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Book.getX() - (int)Cat.getX(), 2) + Math.pow((int)Book.getY() - (int)Cat.getY(), 2)) <= 1){
+        if (Math.sqrt(Math.pow((int)Book.getX() - (int)Cat.getX(), 2) + Math.pow((int)Book.getY() - (int)Cat.getY(), 2)) == 1){
             System.out.println("Error occurred, invalid input: Book is in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Cloak.getX() - (int)Cat.getX(), 2) + Math.pow((int)Cloak.getY() - (int)Cat.getY(), 2)) <= 1){
+        if (Math.sqrt(Math.pow((int)Cloak.getX() - (int)Cat.getX(), 2) + Math.pow((int)Cloak.getY() - (int)Cat.getY(), 2)) == 1){
             System.out.println("Error occurred, invalid input: Cloak is in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Exit.getX() - (int)Cat.getX(), 2) + Math.pow((int)Exit.getY() - (int)Cat.getY(), 2)) <= 1){
+        if (Math.sqrt(Math.pow((int)Exit.getX() - (int)Cat.getX(), 2) + Math.pow((int)Exit.getY() - (int)Cat.getY(), 2)) == 1){
             System.out.println("Error occurred, invalid input: Exit is in inspector's zone");
             System.exit(0);
         }
 
 
-        if (((int)Exit.getX() - (int)Book.getX() == 0) && ((int)Exit.getY() - (int)Book.getY() == 0)){
+        if ((Exit.getX() == Book.getX()) && (Exit.getY() == Book.getY())){
             System.out.println("Error occurred, invalid input: Exit and Book can not be on the same cell");
             System.exit(0);
         }
+    }
+
+
+    public static boolean isInBookCell(MaximLatypov Harry, MaximLatypov Book, boolean haveBook){
+        if (haveBook){
+            return false;
+        }
+        if ((Harry.getX() == Book.getX()) && (Harry.getY() == Book.getY())){
+            haveBook = true;
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isInExitCell(MaximLatypov Harry, MaximLatypov Exit){
+        if ((Harry.getX() == Exit.getX()) && (Harry.getY() == Exit.getY())){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isInCloakCell(MaximLatypov Harry, MaximLatypov Cloak, boolean haveCloak){
+        if (haveCloak){
+            return false;
+        }
+        if ((Harry.getX() == Cloak.getX()) && (Harry.getY() == Cloak.getY())){
+            haveCloak = true;
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isInFilchZone(MaximLatypov Harry, MaximLatypov Filch, boolean haveCloak) {
+        if (!haveCloak) {
+            if (Math.sqrt(Math.pow((int) Harry.getX() - (int) Filch.getX(), 2) + Math.pow((int) Harry.getY() - (int) Filch.getY(), 2)) < 3) {
+                System.out.println("Game over! Filch has found you!");
+                return true;
+            }
+        } else{
+            if ((Harry.getX() == Filch.getX()) && (Harry.getY() == Filch.getY())) {
+                System.out.println("Game over! Filch has found you!");
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isInCatZone(MaximLatypov Harry, MaximLatypov Cat, boolean haveCloak) {
+        if (!haveCloak) {
+            if (Math.sqrt(Math.pow((int) Harry.getX() - (int) Cat.getX(), 2) + Math.pow((int) Harry.getY() - (int) Cat.getY(), 2)) == 1) {
+                System.out.println("Game over! Cat has found you!");
+                return true;
+            }
+        } else{
+            if ((Harry.getX() == Cat.getX()) && (Harry.getY() == Cat.getY())) {
+                System.out.println("Game over! Filch has found you!");
+                return true;
+            }
+        }
+        return false;
     }
 }
