@@ -16,3 +16,6 @@ Cloak could be anywhere but not inside the range of inspectors' observation fiel
 Exit and book could be anywhere not inside the range of inspectors' observation field and not in the same zone
 
 Input file with 2 strings given
+
+
+For A* it is needed to keep data somewhere
