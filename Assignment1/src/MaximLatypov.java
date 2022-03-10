@@ -1,3 +1,4 @@
+import javafx.scene.control.Cell;
 import javafx.util.Pair;
 import java.io.*;
 import java.util.ArrayList;
@@ -119,6 +120,7 @@ public class MaximLatypov {
 }
 
 class Object{
+
     private int x;
     private int y;
 
@@ -145,36 +147,48 @@ class Object{
 }
 
 class Actor extends Object{
+
     private boolean haveBook;
     private boolean haveCloak;
+    private int length;
 
     public boolean isHaveBook() {
         return haveBook;
-    }
-
-    public void setHaveBook(boolean haveBook) {
-        this.haveBook = haveBook;
     }
 
     public boolean isHaveCloak() {
         return haveCloak;
     }
 
+    public int getLength() {
+        return length;
+    }
+
+    public void setHaveBook(boolean haveBook) {
+        this.haveBook = haveBook;
+    }
+
     public void setHaveCloak(boolean haveCloak) {
         this.haveCloak = haveCloak;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
     }
 
     public Actor(int x, int y) {
         super(x, y);
         haveBook = false;
         haveCloak = false;
+        length = 0;
     }
 
     public static boolean isInBookCell(int x, int y, Actor Harry, Object Book){//Might need to change
+
         if (Harry.isHaveBook()){
             return false;
         }
-        if (x == Book.getX() && y ==Book.getY()){
+        if (x == Book.getX() && y == Book.getY()){
             Harry.setHaveBook(true);
             return true;
         }
@@ -182,10 +196,12 @@ class Actor extends Object{
     }
 
     public static boolean isInExitCell(int x, int y, Object Exit){//Have not understood how to implement
+
         return x == Exit.getX() && y == Exit.getY();
     }
 
     public static boolean isInCloakCell(int x, int y, Actor Harry, Object Cloak){ //Might need to change
+
         if (Harry.isHaveCloak()){
             return false;
         }
@@ -197,6 +213,7 @@ class Actor extends Object{
     }
 
     public static boolean isInFilchZone(int x, int y, Actor Harry, Object Filch) {
+
         if (!Harry.isHaveCloak()) {
             if (Math.sqrt(Math.pow(x - Filch.getX(), 2) + Math.pow(y - Filch.getY(), 2)) < 3) {
                 System.out.println("Game over! Filch has found Harry!");
@@ -214,6 +231,7 @@ class Actor extends Object{
     }
 
     public static boolean isInCatZone(int x, int y, Actor Harry, Object Cat) {
+
         if (!Harry.isHaveCloak()) {
             if (Math.sqrt(Math.pow(x - Cat.getX(), 2) + Math.pow(y - Cat.getY(), 2)) < 2) {
                 System.out.println("Game over! Cat has found Harry!");
@@ -229,38 +247,42 @@ class Actor extends Object{
     }
 
     public static boolean isInLegalZone(int x, int y){
+
         return x >= 0 && x < 9 && y < 9 && y >= 0;
     }
 
     public static int G(int x, int y, Actor Harry){
+
         return Math.max(Math.abs(x - Harry.getX()), Math.abs(y - Harry.getY()));
     }
 
     public static int H(int x, int y, Object Destination){
+
         return Math.max(Math.abs(x - Destination.getX()), Math.abs(y - Destination.getY()));
     }
 
     public static void aStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit){
 
-        int length = 0;
-        ArrayList<Pair<Integer,Integer>> cellList = new ArrayList<>();
+        ArrayList<Pair<Object,Integer>> list = new ArrayList<>();
 
         for (int i = Harry.getX() - 1 ; i < Harry.getX() + 2; ++i){
             for (int j = Harry.getY() - 1; j < Harry.getY() + 2; ++j){
-                if (isInLegalZone(i,j)){
-                    if (isInFilchZone(i,j,Harry, Filch) || isInCatZone(i,j,Harry,Cat)){
+                if (isInLegalZone(i, j)){
+                    if (isInFilchZone(i, j, Harry, Filch) || isInCatZone(i, j, Harry, Cat)){
                         continue;
                     }
 
                     if (!Harry.isHaveBook()) {
                         if (isInBookCell(i, j, Harry, Book)) {
-                            length++;
+                            Harry.setLength(Harry.getLength() + 1);
                             Harry.setX(i);
                             Harry.setY(j);
                         }
                         //Search Book
                     }
-                    //Search Exit
+                    Object Cell = new Object(i,j);
+                    Pair<Object, Integer> pair = new Pair<>(Cell, G(i, j, Harry) + H(i, j, Harry));
+                    list.add(pair);//Search Exit
                 }
             }
         }
