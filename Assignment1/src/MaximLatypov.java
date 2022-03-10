@@ -1,5 +1,4 @@
 import javafx.util.Pair;
-
 import java.io.*;
 import java.util.ArrayList;
 
@@ -38,7 +37,7 @@ public class MaximLatypov {
         Object Exit = new Object(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
-        Actor.aStar(Harry, Filch, Cat, Book, Cloak, Exit, Harry.isHaveBook(), Harry.isHaveCloak());
+        Actor.aStar(Harry, Filch, Cat, Book, Cloak, Exit);
         System.out.println("-> This is the place where output ends");
     }
 
@@ -90,8 +89,8 @@ public class MaximLatypov {
             System.out.println("Error occurred, invalid input: Cloak is in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow(Exit.getX() - Filch.getX(), 2) + Math.pow(Exit.getY() - Filch.getY(), 2)) < 3){
-            System.out.println("Error occurred, invalid input: Exit is in inspector's zone");
+        if (Exit.getX() == Filch.getX() && Exit.getY() == Filch.getY()){
+            System.out.println("Error occurred, invalid input: Exit is in inspector's cell");
             System.exit(0);
         }
 
@@ -107,8 +106,8 @@ public class MaximLatypov {
             System.out.println("Error occurred, invalid input: Cloak is in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow(Exit.getX() - Cat.getX(), 2) + Math.pow(Exit.getY() - Cat.getY(), 2)) < 2){
-            System.out.println("Error occurred, invalid input: Exit is in inspector's zone");
+        if (Exit.getX() == Cat.getX() && Exit.getY() == Cat.getY()){
+            System.out.println("Error occurred, invalid input: Exit is in inspector's cell");
             System.exit(0);
         }
 
@@ -171,12 +170,12 @@ class Actor extends Object{
         haveCloak = false;
     }
 
-    public static boolean isInBookCell(int x, int y, Object Book, boolean haveBook){//Might need to change
-        if (haveBook){
+    public static boolean isInBookCell(int x, int y, Actor Harry, Object Book){//Might need to change
+        if (Harry.isHaveBook()){
             return false;
         }
         if (x == Book.getX() && y ==Book.getY()){
-            haveBook = true;
+            Harry.setHaveBook(true);
             return true;
         }
         return false;
@@ -186,19 +185,19 @@ class Actor extends Object{
         return x == Exit.getX() && y == Exit.getY();
     }
 
-    public static boolean isInCloakCell(int x, int y, Object Cloak, boolean haveCloak){ //Might need to change
-        if (haveCloak){
+    public static boolean isInCloakCell(int x, int y, Actor Harry, Object Cloak){ //Might need to change
+        if (Harry.isHaveCloak()){
             return false;
         }
         if (x == Cloak.getX() && y == Cloak.getY()){
-            haveCloak = true;
+            Harry.setHaveCloak(true);
             return true;
         }
         return false;
     }
 
-    public static boolean isInFilchZone(int x, int y, Object Filch, boolean haveCloak) {
-        if (!haveCloak) {
+    public static boolean isInFilchZone(int x, int y, Actor Harry, Object Filch) {
+        if (!Harry.isHaveCloak()) {
             if (Math.sqrt(Math.pow(x - Filch.getX(), 2) + Math.pow(y - Filch.getY(), 2)) < 3) {
                 System.out.println("Game over! Filch has found Harry!");
                 System.out.println(x);
@@ -214,8 +213,8 @@ class Actor extends Object{
         return false;
     }
 
-    public static boolean isInCatZone(int x, int y, Object Cat, boolean haveCloak) {
-        if (!haveCloak) {
+    public static boolean isInCatZone(int x, int y, Actor Harry, Object Cat) {
+        if (!Harry.isHaveCloak()) {
             if (Math.sqrt(Math.pow(x - Cat.getX(), 2) + Math.pow(y - Cat.getY(), 2)) < 2) {
                 System.out.println("Game over! Cat has found Harry!");
                 return true;
@@ -241,7 +240,7 @@ class Actor extends Object{
         return Math.max(Math.abs(x - Destination.getX()), Math.abs(y - Destination.getY()));
     }
 
-    public static void aStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit, boolean haveBook, boolean haveCloak){
+    public static void aStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit){
 
         int length = 0;
         ArrayList<Pair<Integer,Integer>> cellList = new ArrayList<>();
@@ -249,12 +248,12 @@ class Actor extends Object{
         for (int i = Harry.getX() - 1 ; i < Harry.getX() + 2; ++i){
             for (int j = Harry.getY() - 1; j < Harry.getY() + 2; ++j){
                 if (isInLegalZone(i,j)){
-                    if (isInFilchZone(i,j,Filch,haveCloak) || isInCatZone(i,j,Cat,haveCloak)){
+                    if (isInFilchZone(i,j,Harry, Filch) || isInCatZone(i,j,Harry,Cat)){
                         continue;
                     }
 
-                    if (!haveBook) {
-                        if (isInBookCell(i, j, Book, haveBook)) {
+                    if (!Harry.isHaveBook()) {
+                        if (isInBookCell(i, j, Harry, Book)) {
                             length++;
                             Harry.setX(i);
                             Harry.setY(j);
