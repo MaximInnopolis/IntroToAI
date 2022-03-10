@@ -17,5 +17,6 @@ Exit and book could be anywhere not inside the range of inspectors' observation 
 
 Input file with 2 strings given
 
-
 For A* it is needed to keep data somewhere
+First we should find Book
+Then we should find Exit

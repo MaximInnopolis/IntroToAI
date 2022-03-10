@@ -1,5 +1,6 @@
 import javafx.util.Pair;
 
+import javax.print.attribute.standard.Destination;
 import java.io.*;
 import java.util.ArrayList;
 
@@ -65,7 +66,7 @@ public class MaximLatypov {
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
 
-        aStar(Harry,Book,Filch,Cat,Cloak,Exit, haveCloak, haveBook);
+        aStar(Harry, Filch, Cat, Book, Cloak, Exit, haveCloak, haveBook);
         System.out.println("-> This is the place where output ends");
     }
 
@@ -216,11 +217,11 @@ public class MaximLatypov {
         return Math.max(Math.abs(x - Harry.getX()), Math.abs(y - Harry.getY()));
     }
 
-    public static int H(int x, int y, MaximLatypov Exit){
-        return Math.max(Math.abs(x - Exit.getX()), Math.abs(y - Exit.getY()));
+    public static int H(int x, int y, MaximLatypov Destination){
+        return Math.max(Math.abs(x - Destination.getX()), Math.abs(y - Destination.getY()));
     }
 
-    public static void aStar(MaximLatypov Harry, MaximLatypov Book, MaximLatypov Filch, MaximLatypov Cat, MaximLatypov Cloak, MaximLatypov Exit, boolean haveCloak, boolean haveBook){
+    public static void aStar(MaximLatypov Harry, MaximLatypov Filch, MaximLatypov Cat, MaximLatypov Book, MaximLatypov Cloak, MaximLatypov Exit, boolean haveCloak, boolean haveBook){
 
         ArrayList<Pair<Integer,Integer>> cellList = new ArrayList<>();
 
