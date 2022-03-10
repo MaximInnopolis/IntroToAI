@@ -150,7 +150,7 @@ public class MaximLatypov {
     }
 
 
-    public static boolean isInBookCell(int x, int y, MaximLatypov Book, boolean haveBook){
+    public static boolean isInBookCell(int x, int y, MaximLatypov Book, boolean haveBook){ //Might need to change
         if (haveBook){
             return false;
         }
@@ -161,11 +161,11 @@ public class MaximLatypov {
         return false;
     }
 
-    public static boolean isInExitCell(int x, int y, MaximLatypov Exit){
+    public static boolean isInExitCell(int x, int y, MaximLatypov Exit){//Have not understood how to implement
         return (x == Character.getNumericValue(Exit.getX())) && (y == Character.getNumericValue(Exit.getY()));
     }
 
-    public static boolean isInCloakCell(int x, int y, MaximLatypov Cloak, boolean haveCloak){
+    public static boolean isInCloakCell(int x, int y, MaximLatypov Cloak, boolean haveCloak){ //Might need to change
         if (haveCloak){
             return false;
         }
@@ -227,7 +227,13 @@ public class MaximLatypov {
         for (int i = Character.getNumericValue(Harry.getX()) - 1 ; i < Character.getNumericValue(Harry.getX()) + 2; ++i){
             for (int j = Character.getNumericValue(Harry.getY()) - 1; j < Character.getNumericValue(Harry.getY()) + 2; ++j){
                 if (isInLegalZone(i,j)){
-                    isInFilchZone(i,j,Filch,haveCloak);
+                    if (isInFilchZone(i,j,Filch,haveCloak) || isInCatZone(i,j,Cat,haveCloak)){
+                        continue;
+                    }
+
+                    if (isInBookCell(i,j,Book,haveBook)){
+
+                    }
                 }
             }
         }
