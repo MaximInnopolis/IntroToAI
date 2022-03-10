@@ -22,3 +22,4 @@ First we should find Book
 Then we should find Exit
 
 A* will be recursive with update of Harry's position
+Если позиции нет с писке посещенных, то его смотрим

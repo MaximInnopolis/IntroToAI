@@ -1,7 +1,8 @@
-import javafx.scene.control.Cell;
 import javafx.util.Pair;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 public class MaximLatypov {
 
@@ -151,6 +152,7 @@ class Actor extends Object{
     private boolean haveBook;
     private boolean haveCloak;
     private int length;
+    private String path;
 
     public boolean isHaveBook() {
         return haveBook;
@@ -162,6 +164,10 @@ class Actor extends Object{
 
     public int getLength() {
         return length;
+    }
+
+    public String getPath() {
+        return path;
     }
 
     public void setHaveBook(boolean haveBook) {
@@ -176,11 +182,16 @@ class Actor extends Object{
         this.length = length;
     }
 
+    public void setPath(String path) {
+        this.path = path;
+    }
+
     public Actor(int x, int y) {
         super(x, y);
         haveBook = false;
         haveCloak = false;
         length = 0;
+        path = "";
     }
 
     public static boolean isInBookCell(int x, int y, Actor Harry, Object Book){//Might need to change
@@ -251,40 +262,40 @@ class Actor extends Object{
         return x >= 0 && x < 9 && y < 9 && y >= 0;
     }
 
-    public static int G(int x, int y, Actor Harry){
+    public static double G(int x, int y, Actor Harry){
 
         return Math.max(Math.abs(x - Harry.getX()), Math.abs(y - Harry.getY()));
     }
 
-    public static int H(int x, int y, Object Destination){
+    public static double H(int x, int y, Object Destination){
 
-        return Math.max(Math.abs(x - Destination.getX()), Math.abs(y - Destination.getY()));
+        return Math.sqrt(Math.pow(x - Destination.getX(), 2) + Math.pow(y - Destination.getY(),2));
     }
 
     public static void aStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit){
 
-        ArrayList<Pair<Object,Integer>> list = new ArrayList<>();
-
-        for (int i = Harry.getX() - 1 ; i < Harry.getX() + 2; ++i){
-            for (int j = Harry.getY() - 1; j < Harry.getY() + 2; ++j){
-                if (isInLegalZone(i, j)){
-                    if (isInFilchZone(i, j, Harry, Filch) || isInCatZone(i, j, Harry, Cat)){
-                        continue;
-                    }
-
-                    if (!Harry.isHaveBook()) {
-                        if (isInBookCell(i, j, Harry, Book)) {
-                            Harry.setLength(Harry.getLength() + 1);
-                            Harry.setX(i);
-                            Harry.setY(j);
+        ArrayList<Object> visitedCells = new ArrayList<>();
+        PriorityQueue<Pair<Object,Double>> priorityQueue = new PriorityQueue<>();
+        Object Current = new Object(Harry.getX(), Harry.getY());
+        while (Current != Exit) {
+            for (int i = Current.getX() - 1; i < Current.getX() + 2; ++i) {
+                for (int j = Current.getY() - 1; j < Current.getY() + 2; ++j) {
+                    boolean visited = false;
+                    for (int k = 0; k < visitedCells.size(); ++k) {
+                        if (i == visitedCells.get(k).getX() && j == visitedCells.get(k).getY()) {
+                            visited = true;
+                            break;
                         }
-                        //Search Book
                     }
-                    Object Cell = new Object(i,j);
-                    Pair<Object, Integer> pair = new Pair<>(Cell, G(i, j, Harry) + H(i, j, Harry));
-                    list.add(pair);//Search Exit
+                    if (visited) continue;
+
+                    Object Cell = new Object(i, j);
+                    Pair<Object, Double> pair = new Pair<>(Cell, G(i, j, Harry) + H(i, j, Harry));
+                    priorityQueue.add(pair);
                 }
             }
+            Current = priorityQueue.poll().getKey();
+            visitedCells.add(Current);
         }
     }
 }
