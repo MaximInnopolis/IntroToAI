@@ -20,3 +20,5 @@ Input file with 2 strings given
 For A* it is needed to keep data somewhere
 First we should find Book
 Then we should find Exit
+
+A* will be recursive with update of Harry's position

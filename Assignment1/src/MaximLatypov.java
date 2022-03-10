@@ -1,41 +1,14 @@
 import javafx.util.Pair;
 
-import javax.print.attribute.standard.Destination;
 import java.io.*;
 import java.util.ArrayList;
 
 public class MaximLatypov {
 
-    private int x;
-    private int y;
-
-    public MaximLatypov(int x, int y){
-        this.x = x;
-        this.y = y;
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setX(char x) {
-        this.x = x;
-    }
-
-    public void setY(char y) {
-        this.y = y;
-    }
-
     public static void main(String[] args) {
 
         String input = "";
         String scenario = "";
-        boolean haveBook = false;
-        boolean haveCloak = false;
 
         try{
             FileReader fileReader = new FileReader("C:\\Users\\Max\\OneDrive\\Документы\\GitHub\\IntroToAI\\Assignment1\\src\\input.txt");
@@ -57,16 +30,15 @@ public class MaximLatypov {
         findScenarioError(scenario);
         findInputValueError(input);
 
-        MaximLatypov Harry = new MaximLatypov(Character.getNumericValue(input.charAt(1)), Character.getNumericValue(input.charAt(3)));
-        MaximLatypov Filch = new MaximLatypov(Character.getNumericValue(input.charAt(7)), Character.getNumericValue(input.charAt(9)));
-        MaximLatypov Cat = new MaximLatypov(Character.getNumericValue(input.charAt(13)), Character.getNumericValue(input.charAt(15)));
-        MaximLatypov Book = new MaximLatypov(Character.getNumericValue(input.charAt(19)), Character.getNumericValue(input.charAt(21)));
-        MaximLatypov Cloak = new MaximLatypov(Character.getNumericValue(input.charAt(25)), Character.getNumericValue(input.charAt(27)));
-        MaximLatypov Exit = new MaximLatypov(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
+        Actor Harry = new Actor(Character.getNumericValue(input.charAt(1)), Character.getNumericValue(input.charAt(3)));
+        Object Filch = new Object(Character.getNumericValue(input.charAt(7)), Character.getNumericValue(input.charAt(9)));
+        Object Cat = new Object(Character.getNumericValue(input.charAt(13)), Character.getNumericValue(input.charAt(15)));
+        Object Book = new Object(Character.getNumericValue(input.charAt(19)), Character.getNumericValue(input.charAt(21)));
+        Object Cloak = new Object(Character.getNumericValue(input.charAt(25)), Character.getNumericValue(input.charAt(27)));
+        Object Exit = new Object(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
-
-        aStar(Harry, Filch, Cat, Book, Cloak, Exit, haveCloak, haveBook);
+        Actor.aStar(Harry, Filch, Cat, Book, Cloak, Exit, Harry.isHaveBook(), Harry.isHaveCloak());
         System.out.println("-> This is the place where output ends");
     }
 
@@ -87,7 +59,6 @@ public class MaximLatypov {
             }
         }
 
-
         for (int i = 1, j = 3; i < 32; i = i + 6, j = i + 2){
             if ((input.charAt(i) < '0') || (input.charAt(i) > '8')) {
                 System.out.println("Error occurred, invalid input: input value is illegal");
@@ -99,14 +70,13 @@ public class MaximLatypov {
             }
         }
 
-
         if (input.length() != 35){
             System.out.println("Error occurred, invalid input: illegal number of input values");
             System.exit(0);
         }
     }
 
-    public static void findLogicError(MaximLatypov Harry, MaximLatypov Filch, MaximLatypov Cat, MaximLatypov Book, MaximLatypov Cloak, MaximLatypov Exit){
+    public static void findLogicError(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit){
 
         if (Math.sqrt(Math.pow(Harry.getX() - Filch.getX(), 2) + Math.pow(Harry.getY() - Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Harry is already in inspector's zone");
@@ -125,7 +95,6 @@ public class MaximLatypov {
             System.exit(0);
         }
 
-
         if (Math.sqrt(Math.pow(Harry.getX() - Cat.getX(), 2) + Math.pow(Harry.getY() - Cat.getY(), 2)) < 2){
             System.out.println("Error occurred, invalid input: Harry is already in inspector's zone");
             System.exit(0);
@@ -134,7 +103,7 @@ public class MaximLatypov {
             System.out.println("Error occurred, invalid input: Book is in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow(Cloak.getX() - Cat.getX(), 2) + Math.pow((int)Cloak.getY() - (int)Cat.getY(), 2)) < 2){
+        if (Math.sqrt(Math.pow(Cloak.getX() - Cat.getX(), 2) + Math.pow(Cloak.getY() - Cat.getY(), 2)) < 2){
             System.out.println("Error occurred, invalid input: Cloak is in inspector's zone");
             System.exit(0);
         }
@@ -143,15 +112,66 @@ public class MaximLatypov {
             System.exit(0);
         }
 
-
         if ((Exit.getX() == Book.getX()) && (Exit.getY() == Book.getY())){
             System.out.println("Error occurred, invalid input: Exit and Book can not be on the same cell");
             System.exit(0);
         }
     }
+}
 
+class Object{
+    private int x;
+    private int y;
 
-    public static boolean isInBookCell(int x, int y, MaximLatypov Book, boolean haveBook){ //Might need to change
+    public Object(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+}
+
+class Actor extends Object{
+    private boolean haveBook;
+    private boolean haveCloak;
+
+    public boolean isHaveBook() {
+        return haveBook;
+    }
+
+    public void setHaveBook(boolean haveBook) {
+        this.haveBook = haveBook;
+    }
+
+    public boolean isHaveCloak() {
+        return haveCloak;
+    }
+
+    public void setHaveCloak(boolean haveCloak) {
+        this.haveCloak = haveCloak;
+    }
+
+    public Actor(int x, int y) {
+        super(x, y);
+        haveBook = false;
+        haveCloak = false;
+    }
+
+    public static boolean isInBookCell(int x, int y, Object Book, boolean haveBook){//Might need to change
         if (haveBook){
             return false;
         }
@@ -162,11 +182,11 @@ public class MaximLatypov {
         return false;
     }
 
-    public static boolean isInExitCell(int x, int y, MaximLatypov Exit){//Have not understood how to implement
+    public static boolean isInExitCell(int x, int y, Object Exit){//Have not understood how to implement
         return x == Exit.getX() && y == Exit.getY();
     }
 
-    public static boolean isInCloakCell(int x, int y, MaximLatypov Cloak, boolean haveCloak){ //Might need to change
+    public static boolean isInCloakCell(int x, int y, Object Cloak, boolean haveCloak){ //Might need to change
         if (haveCloak){
             return false;
         }
@@ -177,7 +197,7 @@ public class MaximLatypov {
         return false;
     }
 
-    public static boolean isInFilchZone(int x, int y, MaximLatypov Filch, boolean haveCloak) {
+    public static boolean isInFilchZone(int x, int y, Object Filch, boolean haveCloak) {
         if (!haveCloak) {
             if (Math.sqrt(Math.pow(x - Filch.getX(), 2) + Math.pow(y - Filch.getY(), 2)) < 3) {
                 System.out.println("Game over! Filch has found Harry!");
@@ -194,7 +214,7 @@ public class MaximLatypov {
         return false;
     }
 
-    public static boolean isInCatZone(int x, int y, MaximLatypov Cat, boolean haveCloak) {
+    public static boolean isInCatZone(int x, int y, Object Cat, boolean haveCloak) {
         if (!haveCloak) {
             if (Math.sqrt(Math.pow(x - Cat.getX(), 2) + Math.pow(y - Cat.getY(), 2)) < 2) {
                 System.out.println("Game over! Cat has found Harry!");
@@ -213,16 +233,17 @@ public class MaximLatypov {
         return x >= 0 && x < 9 && y < 9 && y >= 0;
     }
 
-    public static int G(int x, int y, MaximLatypov Harry){
+    public static int G(int x, int y, Actor Harry){
         return Math.max(Math.abs(x - Harry.getX()), Math.abs(y - Harry.getY()));
     }
 
-    public static int H(int x, int y, MaximLatypov Destination){
+    public static int H(int x, int y, Object Destination){
         return Math.max(Math.abs(x - Destination.getX()), Math.abs(y - Destination.getY()));
     }
 
-    public static void aStar(MaximLatypov Harry, MaximLatypov Filch, MaximLatypov Cat, MaximLatypov Book, MaximLatypov Cloak, MaximLatypov Exit, boolean haveCloak, boolean haveBook){
+    public static void aStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit, boolean haveBook, boolean haveCloak){
 
+        int length = 0;
         ArrayList<Pair<Integer,Integer>> cellList = new ArrayList<>();
 
         for (int i = Harry.getX() - 1 ; i < Harry.getX() + 2; ++i){
@@ -232,9 +253,15 @@ public class MaximLatypov {
                         continue;
                     }
 
-                    if (isInBookCell(i,j,Book,haveBook)){
-
+                    if (!haveBook) {
+                        if (isInBookCell(i, j, Book, haveBook)) {
+                            length++;
+                            Harry.setX(i);
+                            Harry.setY(j);
+                        }
+                        //Search Book
                     }
+                    //Search Exit
                 }
             }
         }
