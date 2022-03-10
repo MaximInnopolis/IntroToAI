@@ -5,19 +5,19 @@ import java.util.ArrayList;
 
 public class MaximLatypov {
 
-    private char x;
-    private char y;
+    private int x;
+    private int y;
 
-    public MaximLatypov(char x, char y){
+    public MaximLatypov(int x, int y){
         this.x = x;
         this.y = y;
     }
 
-    public char getX() {
+    public int getX() {
         return x;
     }
 
-    public char getY() {
+    public int getY() {
         return y;
     }
 
@@ -56,12 +56,12 @@ public class MaximLatypov {
         findScenarioError(scenario);
         findInputValueError(input);
 
-        MaximLatypov Harry = new MaximLatypov(input.charAt(1), input.charAt(3));
-        MaximLatypov Filch = new MaximLatypov(input.charAt(7), input.charAt(9));
-        MaximLatypov Cat = new MaximLatypov(input.charAt(13), input.charAt(15));
-        MaximLatypov Book = new MaximLatypov(input.charAt(19), input.charAt(21));
-        MaximLatypov Cloak = new MaximLatypov(input.charAt(25), input.charAt(27));
-        MaximLatypov Exit = new MaximLatypov(input.charAt(31), input.charAt(33));
+        MaximLatypov Harry = new MaximLatypov(Character.getNumericValue(input.charAt(1)), Character.getNumericValue(input.charAt(3)));
+        MaximLatypov Filch = new MaximLatypov(Character.getNumericValue(input.charAt(7)), Character.getNumericValue(input.charAt(9)));
+        MaximLatypov Cat = new MaximLatypov(Character.getNumericValue(input.charAt(13)), Character.getNumericValue(input.charAt(15)));
+        MaximLatypov Book = new MaximLatypov(Character.getNumericValue(input.charAt(19)), Character.getNumericValue(input.charAt(21)));
+        MaximLatypov Cloak = new MaximLatypov(Character.getNumericValue(input.charAt(25)), Character.getNumericValue(input.charAt(27)));
+        MaximLatypov Exit = new MaximLatypov(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
 
@@ -107,37 +107,37 @@ public class MaximLatypov {
 
     public static void findLogicError(MaximLatypov Harry, MaximLatypov Filch, MaximLatypov Cat, MaximLatypov Book, MaximLatypov Cloak, MaximLatypov Exit){
 
-        if (Math.sqrt(Math.pow((int)Harry.getX() - (int)Filch.getX(), 2) + Math.pow((int)Harry.getY() - (int)Filch.getY(), 2)) < 3){
+        if (Math.sqrt(Math.pow(Harry.getX() - Filch.getX(), 2) + Math.pow(Harry.getY() - Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Harry is already in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Book.getX() - (int)Filch.getX(), 2) + Math.pow((int)Book.getY() - (int)Filch.getY(), 2)) < 3){
+        if (Math.sqrt(Math.pow(Book.getX() - Filch.getX(), 2) + Math.pow(Book.getY() - Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Book is in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Cloak.getX() - (int)Filch.getX(), 2) + Math.pow((int)Cloak.getY() - (int)Filch.getY(), 2)) < 3){
+        if (Math.sqrt(Math.pow(Cloak.getX() - Filch.getX(), 2) + Math.pow(Cloak.getY() - Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Cloak is in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Exit.getX() - (int)Filch.getX(), 2) + Math.pow((int)Exit.getY() - (int)Filch.getY(), 2)) < 3){
+        if (Math.sqrt(Math.pow(Exit.getX() - Filch.getX(), 2) + Math.pow(Exit.getY() - Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Exit is in inspector's zone");
             System.exit(0);
         }
 
 
-        if (Math.sqrt(Math.pow((int)Harry.getX() - (int)Cat.getX(), 2) + Math.pow((int)Harry.getY() - (int)Cat.getY(), 2)) == 1){
+        if (Math.sqrt(Math.pow(Harry.getX() - Cat.getX(), 2) + Math.pow(Harry.getY() - Cat.getY(), 2)) < 2){
             System.out.println("Error occurred, invalid input: Harry is already in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Book.getX() - (int)Cat.getX(), 2) + Math.pow((int)Book.getY() - (int)Cat.getY(), 2)) == 1){
+        if (Math.sqrt(Math.pow(Book.getX() - Cat.getX(), 2) + Math.pow(Book.getY() - Cat.getY(), 2)) < 2){
             System.out.println("Error occurred, invalid input: Book is in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Cloak.getX() - (int)Cat.getX(), 2) + Math.pow((int)Cloak.getY() - (int)Cat.getY(), 2)) == 1){
+        if (Math.sqrt(Math.pow(Cloak.getX() - Cat.getX(), 2) + Math.pow((int)Cloak.getY() - (int)Cat.getY(), 2)) < 2){
             System.out.println("Error occurred, invalid input: Cloak is in inspector's zone");
             System.exit(0);
         }
-        if (Math.sqrt(Math.pow((int)Exit.getX() - (int)Cat.getX(), 2) + Math.pow((int)Exit.getY() - (int)Cat.getY(), 2)) == 1){
+        if (Math.sqrt(Math.pow(Exit.getX() - Cat.getX(), 2) + Math.pow(Exit.getY() - Cat.getY(), 2)) < 2){
             System.out.println("Error occurred, invalid input: Exit is in inspector's zone");
             System.exit(0);
         }
@@ -154,7 +154,7 @@ public class MaximLatypov {
         if (haveBook){
             return false;
         }
-        if ((x == Character.getNumericValue(Book.getX())) && (y == Character.getNumericValue(Book.getY()))){
+        if (x == Book.getX() && y ==Book.getY()){
             haveBook = true;
             return true;
         }
@@ -162,14 +162,14 @@ public class MaximLatypov {
     }
 
     public static boolean isInExitCell(int x, int y, MaximLatypov Exit){//Have not understood how to implement
-        return (x == Character.getNumericValue(Exit.getX())) && (y == Character.getNumericValue(Exit.getY()));
+        return x == Exit.getX() && y == Exit.getY();
     }
 
     public static boolean isInCloakCell(int x, int y, MaximLatypov Cloak, boolean haveCloak){ //Might need to change
         if (haveCloak){
             return false;
         }
-        if ((x == Character.getNumericValue(Cloak.getX()) && (y == Character.getNumericValue(Cloak.getY())))){
+        if (x == Cloak.getX() && y == Cloak.getY()){
             haveCloak = true;
             return true;
         }
@@ -178,14 +178,14 @@ public class MaximLatypov {
 
     public static boolean isInFilchZone(int x, int y, MaximLatypov Filch, boolean haveCloak) {
         if (!haveCloak) {
-            if (Math.sqrt(Math.pow(x - Character.getNumericValue(Filch.getX()), 2) + Math.pow(y - Character.getNumericValue(Filch.getY()), 2)) < 3) {
+            if (Math.sqrt(Math.pow(x - Filch.getX(), 2) + Math.pow(y - Filch.getY(), 2)) < 3) {
                 System.out.println("Game over! Filch has found Harry!");
                 System.out.println(x);
                 System.out.println(y);
                 return true;
             }
         } else{
-            if ((x == Character.getNumericValue(Filch.getX())) && (y == Character.getNumericValue(Filch.getY()))) {
+            if (x == Filch.getX() && y == Filch.getY()) {
                 System.out.println("Game over! Filch has found Harry!");
                 return true;
             }
@@ -195,12 +195,12 @@ public class MaximLatypov {
 
     public static boolean isInCatZone(int x, int y, MaximLatypov Cat, boolean haveCloak) {
         if (!haveCloak) {
-            if (Math.sqrt(Math.pow(x - Character.getNumericValue(Cat.getX()), 2) + Math.pow(y - Character.getNumericValue(Cat.getY()), 2)) < 2) {
+            if (Math.sqrt(Math.pow(x - Cat.getX(), 2) + Math.pow(y - Cat.getY(), 2)) < 2) {
                 System.out.println("Game over! Cat has found Harry!");
                 return true;
             }
         } else{
-            if ((x == Character.getNumericValue(Cat.getX())) && (y == Character.getNumericValue(Cat.getY()))) {
+            if (x == Cat.getX() && y == Cat.getY()) {
                 System.out.println("Game over! Filch has found Harry!");
                 return true;
             }
@@ -213,19 +213,19 @@ public class MaximLatypov {
     }
 
     public static int G(int x, int y, MaximLatypov Harry){
-        return Math.max(Math.abs(x - Character.getNumericValue(Harry.getX())), Math.abs(y - Character.getNumericValue(Harry.getY())));
+        return Math.max(Math.abs(x - Harry.getX()), Math.abs(y - Harry.getY()));
     }
 
     public static int H(int x, int y, MaximLatypov Exit){
-        return Math.max(Math.abs(x - Character.getNumericValue(Exit.getX())), Math.abs(y - Character.getNumericValue(Exit.getY())));
+        return Math.max(Math.abs(x - Exit.getX()), Math.abs(y - Exit.getY()));
     }
 
     public static void aStar(MaximLatypov Harry, MaximLatypov Book, MaximLatypov Filch, MaximLatypov Cat, MaximLatypov Cloak, MaximLatypov Exit, boolean haveCloak, boolean haveBook){
 
         ArrayList<Pair<Integer,Integer>> cellList = new ArrayList<>();
 
-        for (int i = Character.getNumericValue(Harry.getX()) - 1 ; i < Character.getNumericValue(Harry.getX()) + 2; ++i){
-            for (int j = Character.getNumericValue(Harry.getY()) - 1; j < Character.getNumericValue(Harry.getY()) + 2; ++j){
+        for (int i = Harry.getX() - 1 ; i < Harry.getX() + 2; ++i){
+            for (int j = Harry.getY() - 1; j < Harry.getY() + 2; ++j){
                 if (isInLegalZone(i,j)){
                     if (isInFilchZone(i,j,Filch,haveCloak) || isInCatZone(i,j,Cat,haveCloak)){
                         continue;
