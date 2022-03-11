@@ -210,16 +210,11 @@ class Actor extends Object{
         return x == Exit.getX() && y == Exit.getY();
     }
 
-    public static boolean isInCloakCell(int x, int y, Actor Harry, Object Cloak){ //Might need to change
+    public static void checkCloak(int x, int y, Actor Harry, Object Cloak){
 
-        if (Harry.isHaveCloak()){
-            return false;
-        }
-        if (x == Cloak.getX() && y == Cloak.getY()){
+        if (x == Cloak.getX() && y == Cloak.getY()) {
             Harry.setHaveCloak(true);
-            return true;
         }
-        return false;
     }
 
     public static boolean isInFilchZone(int x, int y, Actor Harry, Object Filch) {
@@ -241,14 +236,17 @@ class Actor extends Object{
     }
 
     public static boolean isInLegalZone(int x, int y){
+
         return x >= 0 && x < 9 && y < 9 && y >= 0;
     }
 
     public static double G(int x, int y, Actor Harry){
+
         return Math.max(Math.abs(x - Harry.getX()), Math.abs(y - Harry.getY()));
     }
 
     public static double H(int x, int y, Object Destination){
+
         return Math.sqrt(Math.pow(x - Destination.getX(), 2) + Math.pow(y - Destination.getY(),2));
     }
 
@@ -275,6 +273,7 @@ class Actor extends Object{
                     }
                     if (visited) continue;
 
+                    checkCloak(i, j, Harry, Cloak);
                     Object Cell = new Object(i, j);
                     uniqueCells.add(Cell);
                     priorityQueue.add(new AbstractMap.SimpleEntry<>(Cell,G(i, j, Harry) + H(i, j, Exit)));
@@ -285,7 +284,7 @@ class Actor extends Object{
                 continue;
             }
             Current = priorityQueue.poll().getKey();
-            if (Current.getX() == Exit.getX() && Current.getY() == Exit.getY()){
+            if (isInExitCell(Current.getX(), Current.getY(), Exit)){
                 visitedCells.add(Exit);
                 return visitedCells;
             }
