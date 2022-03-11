@@ -1,8 +1,6 @@
 import javafx.util.Pair;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.*;
 
 public class MaximLatypov {
 
@@ -263,7 +261,6 @@ class Actor extends Object{
     }
 
     public static double G(int x, int y, Actor Harry){
-
         return Math.max(Math.abs(x - Harry.getX()), Math.abs(y - Harry.getY()));
     }
 
@@ -272,17 +269,22 @@ class Actor extends Object{
         return Math.sqrt(Math.pow(x - Destination.getX(), 2) + Math.pow(y - Destination.getY(),2));
     }
 
-    public static void aStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit){
+    public static ArrayList<Object> aStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit){
 
         ArrayList<Object> visitedCells = new ArrayList<>();
-        PriorityQueue<Pair<Object,Double>> priorityQueue = new PriorityQueue<>();
+        ArrayList<Object> uniqueCells = new ArrayList<>();
+        visitedCells.add(Harry);
+        PriorityQueue<Map.Entry<Object,Double>> priorityQueue = new PriorityQueue<>(Map.Entry.comparingByValue());
         Object Current = new Object(Harry.getX(), Harry.getY());
         while (Current != Exit) {
             for (int i = Current.getX() - 1; i < Current.getX() + 2; ++i) {
                 for (int j = Current.getY() - 1; j < Current.getY() + 2; ++j) {
+                    if (!isInLegalZone(i,j) || i == Current.getX() && j == Current.getY()){
+                        continue;
+                    }
                     boolean visited = false;
-                    for (int k = 0; k < visitedCells.size(); ++k) {
-                        if (i == visitedCells.get(k).getX() && j == visitedCells.get(k).getY()) {
+                    for (Object uniqueCell : uniqueCells) {
+                        if (i == uniqueCell.getX() && j == uniqueCell.getY()) {
                             visited = true;
                             break;
                         }
@@ -290,12 +292,16 @@ class Actor extends Object{
                     if (visited) continue;
 
                     Object Cell = new Object(i, j);
-                    Pair<Object, Double> pair = new Pair<>(Cell, G(i, j, Harry) + H(i, j, Harry));
-                    priorityQueue.add(pair);
+                    uniqueCells.add(Cell);
+                    priorityQueue.add(new AbstractMap.SimpleEntry<>(Cell,G(i, j, Harry) + H(i, j, Exit)));
                 }
             }
             Current = priorityQueue.poll().getKey();
+            if (Current.getX() == Exit.getX() && Current.getY() == Exit.getY()){
+                return visitedCells;
+            }
             visitedCells.add(Current);
         }
+        return visitedCells;
     }
 }
