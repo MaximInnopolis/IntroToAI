@@ -37,7 +37,8 @@ public class MaximLatypov {
         Object Exit = new Object(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
-        Actor.aStar(Harry, Filch, Cat, Book, Cloak, Exit);
+        Actor.followAStar(Harry,Filch,Cat,Cloak,Exit);
+//        Actor.aStar(Harry, Cloak, Exit);
         System.out.println("-> This is the place where output ends");
     }
 
@@ -224,39 +225,22 @@ class Actor extends Object{
     public static boolean isInFilchZone(int x, int y, Actor Harry, Object Filch) {
 
         if (!Harry.isHaveCloak()) {
-            if (Math.sqrt(Math.pow(x - Filch.getX(), 2) + Math.pow(y - Filch.getY(), 2)) < 3) {
-                System.out.println("Game over! Filch has found Harry!");
-                System.out.println(x);
-                System.out.println(y);
-                return true;
-            }
+            return Math.sqrt(Math.pow(x - Filch.getX(), 2) + Math.pow(y - Filch.getY(), 2)) < 3;
         } else{
-            if (x == Filch.getX() && y == Filch.getY()) {
-                System.out.println("Game over! Filch has found Harry!");
-                return true;
-            }
+            return x == Filch.getX() && y == Filch.getY();
         }
-        return false;
     }
 
     public static boolean isInCatZone(int x, int y, Actor Harry, Object Cat) {
 
         if (!Harry.isHaveCloak()) {
-            if (Math.sqrt(Math.pow(x - Cat.getX(), 2) + Math.pow(y - Cat.getY(), 2)) < 2) {
-                System.out.println("Game over! Cat has found Harry!");
-                return true;
-            }
+            return Math.sqrt(Math.pow(x - Cat.getX(), 2) + Math.pow(y - Cat.getY(), 2)) < 2;
         } else{
-            if (x == Cat.getX() && y == Cat.getY()) {
-                System.out.println("Game over! Filch has found Harry!");
-                return true;
-            }
+            return x == Cat.getX() && y == Cat.getY();
         }
-        return false;
     }
 
     public static boolean isInLegalZone(int x, int y){
-
         return x >= 0 && x < 9 && y < 9 && y >= 0;
     }
 
@@ -265,21 +249,21 @@ class Actor extends Object{
     }
 
     public static double H(int x, int y, Object Destination){
-
         return Math.sqrt(Math.pow(x - Destination.getX(), 2) + Math.pow(y - Destination.getY(),2));
     }
 
-    public static ArrayList<Object> aStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit){
+    public static ArrayList<Object> aStar(Actor Harry, Object Filch, Object Cat, Object Cloak, Object Exit){
 
         ArrayList<Object> visitedCells = new ArrayList<>();
         ArrayList<Object> uniqueCells = new ArrayList<>();
-        visitedCells.add(Harry);
         PriorityQueue<Map.Entry<Object,Double>> priorityQueue = new PriorityQueue<>(Map.Entry.comparingByValue());
         Object Current = new Object(Harry.getX(), Harry.getY());
+        visitedCells.add(Current);
+        uniqueCells.add(Current);
         while (Current != Exit) {
             for (int i = Current.getX() - 1; i < Current.getX() + 2; ++i) {
                 for (int j = Current.getY() - 1; j < Current.getY() + 2; ++j) {
-                    if (!isInLegalZone(i,j) || i == Current.getX() && j == Current.getY()){
+                    if (!isInLegalZone(i,j) || isInCatZone(i, j, Harry, Cat) || isInFilchZone(i, j, Harry, Filch) || i == Current.getX() && j == Current.getY()){
                         continue;
                     }
                     boolean visited = false;
@@ -296,12 +280,24 @@ class Actor extends Object{
                     priorityQueue.add(new AbstractMap.SimpleEntry<>(Cell,G(i, j, Harry) + H(i, j, Exit)));
                 }
             }
+            if (Math.abs(Current.getX() - priorityQueue.element().getKey().getX()) >= 2 || Math.abs(Current.getY() - priorityQueue.element().getKey().getY()) >= 2){
+                priorityQueue.remove(priorityQueue.element());
+                continue;
+            }
             Current = priorityQueue.poll().getKey();
             if (Current.getX() == Exit.getX() && Current.getY() == Exit.getY()){
+                visitedCells.add(Exit);
                 return visitedCells;
             }
             visitedCells.add(Current);
         }
         return visitedCells;
+    }
+    public static void followAStar(Actor Harry, Object Filch, Object Cat, Object Cloak, Object Exit){
+        ArrayList<Object> cellsToMove = aStar(Harry, Filch, Cat, Cloak, Exit);
+
+        for (Object object : cellsToMove) {
+            System.out.println("[" + String.valueOf(object.getX()) + ", " + String.valueOf(object.getY()) + "]");
+        }
     }
 }
