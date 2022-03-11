@@ -258,37 +258,42 @@ class Actor extends Object{
         Object Current = new Object(Harry.getX(), Harry.getY());
         visitedCells.add(Current);
         uniqueCells.add(Current);
-        while (Current != Exit) {
-            for (int i = Current.getX() - 1; i < Current.getX() + 2; ++i) {
-                for (int j = Current.getY() - 1; j < Current.getY() + 2; ++j) {
-                    if (!isInLegalZone(i,j) || isInCatZone(i, j, Harry, Cat) || isInFilchZone(i, j, Harry, Filch) || i == Current.getX() && j == Current.getY()){
-                        continue;
-                    }
-                    boolean visited = false;
-                    for (Object uniqueCell : uniqueCells) {
-                        if (i == uniqueCell.getX() && j == uniqueCell.getY()) {
-                            visited = true;
-                            break;
+        try {
+            while (Current != Exit) {
+                for (int i = Current.getX() - 1; i < Current.getX() + 2; ++i) {
+                    for (int j = Current.getY() - 1; j < Current.getY() + 2; ++j) {
+                        if (!isInLegalZone(i, j) || isInCatZone(i, j, Harry, Cat) || isInFilchZone(i, j, Harry, Filch) || i == Current.getX() && j == Current.getY()) {
+                            continue;
                         }
-                    }
-                    if (visited) continue;
+                        boolean visited = false;
+                        for (Object uniqueCell : uniqueCells) {
+                            if (i == uniqueCell.getX() && j == uniqueCell.getY()) {
+                                visited = true;
+                                break;
+                            }
+                        }
+                        if (visited) continue;
 
-                    checkCloak(i, j, Harry, Cloak);
-                    Object Cell = new Object(i, j);
-                    uniqueCells.add(Cell);
-                    priorityQueue.add(new AbstractMap.SimpleEntry<>(Cell,G(i, j, Harry) + H(i, j, Exit)));
+                        checkCloak(i, j, Harry, Cloak);
+                        Object Cell = new Object(i, j);
+                        uniqueCells.add(Cell);
+                        priorityQueue.add(new AbstractMap.SimpleEntry<>(Cell, G(i, j, Harry) + H(i, j, Exit)));
+                    }
                 }
+                if (Math.abs(Current.getX() - priorityQueue.element().getKey().getX()) >= 2 || Math.abs(Current.getY() - priorityQueue.element().getKey().getY()) >= 2) {
+                    priorityQueue.remove(priorityQueue.element());
+                    continue;
+                }
+                Current = priorityQueue.poll().getKey();
+                if (isInExitCell(Current.getX(), Current.getY(), Exit)) {
+                    visitedCells.add(Exit);
+                    return visitedCells;
+                }
+                visitedCells.add(Current);
             }
-            if (Math.abs(Current.getX() - priorityQueue.element().getKey().getX()) >= 2 || Math.abs(Current.getY() - priorityQueue.element().getKey().getY()) >= 2){
-                priorityQueue.remove(priorityQueue.element());
-                continue;
-            }
-            Current = priorityQueue.poll().getKey();
-            if (isInExitCell(Current.getX(), Current.getY(), Exit)){
-                visitedCells.add(Exit);
-                return visitedCells;
-            }
-            visitedCells.add(Current);
+        } catch (NoSuchElementException e){
+            System.out.println("Impossible to reach exit");
+            System.exit(0);
         }
         return visitedCells;
     }
