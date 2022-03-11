@@ -1,4 +1,3 @@
-import javafx.util.Pair;
 import java.io.*;
 import java.util.*;
 
@@ -205,7 +204,7 @@ class Actor extends Object{
         return false;
     }
 
-    public static boolean isInExitCell(int x, int y, Object Exit){//Have not understood how to implement
+    public static boolean isInExitCell(int x, int y, Object Exit){
 
         return x == Exit.getX() && y == Exit.getY();
     }
