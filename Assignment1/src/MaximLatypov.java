@@ -241,7 +241,7 @@ class Actor extends Object{
 
     public static double G(int x, int y, Actor Harry){
 
-        return Math.max(Math.abs(x - Harry.getX()), Math.abs(y - Harry.getY()));
+        return Math.sqrt(Math.pow(x - Harry.getX(),2) + Math.sqrt(Math.pow(y - Harry.getY(), 2)));
     }
 
     public static double H(int x, int y, Object Destination){
