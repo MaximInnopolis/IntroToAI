@@ -1,4 +1,8 @@
+import com.sun.org.apache.xerces.internal.impl.xpath.XPath;
+import jdk.internal.org.objectweb.asm.tree.FieldInsnNode;
+
 import java.io.*;
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class MaximLatypov {
@@ -36,7 +40,7 @@ public class MaximLatypov {
         Object Exit = new Object(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
-        Actor.followAStar(Harry,Filch,Cat,Cloak,Exit);
+        Actor.followAStar(Harry,Filch,Cat,Book,Cloak,Exit);
 //        Actor.aStar(Harry, Cloak, Exit);
         System.out.println("-> This is the place where output ends");
     }
@@ -149,8 +153,7 @@ class Actor extends Object{
 
     private boolean haveBook;
     private boolean haveCloak;
-    private int length;
-    private String path;
+    public static int[][] map = new int[9][9];
 
     public boolean isHaveBook() {
         return haveBook;
@@ -158,14 +161,6 @@ class Actor extends Object{
 
     public boolean isHaveCloak() {
         return haveCloak;
-    }
-
-    public int getLength() {
-        return length;
-    }
-
-    public String getPath() {
-        return path;
     }
 
     public void setHaveBook(boolean haveBook) {
@@ -176,20 +171,14 @@ class Actor extends Object{
         this.haveCloak = haveCloak;
     }
 
-    public void setLength(int length) {
-        this.length = length;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
 
     public Actor(int x, int y) {
         super(x, y);
         haveBook = false;
         haveCloak = false;
-        length = 0;
-        path = "";
+        for (int[] raw: map){
+            Arrays.fill(raw, 0);
+        }
     }
 
     public static boolean isInBookCell(int x, int y, Actor Harry, Object Book){//Might need to change
@@ -205,102 +194,116 @@ class Actor extends Object{
     }
 
     public static boolean isInExitCell(int x, int y, Object Exit){
-
         return x == Exit.getX() && y == Exit.getY();
     }
 
-    public static void checkCloak(int x, int y, Actor Harry, Object Cloak){
-
-        if (x == Cloak.getX() && y == Cloak.getY()) {
+    public static void checkArticle(Actor Harry, Object Article){
+        if (Harry.getX() == Article.getX() && Harry.getY() == Article.getY()) {
             Harry.setHaveCloak(true);
         }
     }
 
-    public static boolean isInFilchZone(int x, int y, Actor Harry, Object Filch) {
-
-        if (!Harry.isHaveCloak()) {
-            return Math.sqrt(Math.pow(x - Filch.getX(), 2) + Math.pow(y - Filch.getY(), 2)) < 3;
-        } else{
-            return x == Filch.getX() && y == Filch.getY();
+    public static boolean isInFilchZone(Actor Harry, Object Filch) {
+        for (int i = Harry.getX() - 1; i < Harry.getX() + 2; ++i) {
+            for (int j = Harry.getX() - 1; j < Harry.getX() + 2; ++j) {
+                if (!Harry.isHaveCloak()) {
+                   if (Math.sqrt(Math.pow(Harry.getX() - Filch.getX(), 2) + Math.pow(Harry.getY() - Filch.getY(), 2)) < 3){
+                       map[i][j] = -1;
+                       return true;
+                   }
+                } else {
+                    if (Harry.getX() == Filch.getX() && Harry.getY() == Filch.getY()){
+                        map[i][j] = -1;
+                        return true;
+                    }
+                }
+            }
         }
+        return false;
     }
 
-    public static boolean isInCatZone(int x, int y, Actor Harry, Object Cat) {
-
-        if (!Harry.isHaveCloak()) {
-            return Math.sqrt(Math.pow(x - Cat.getX(), 2) + Math.pow(y - Cat.getY(), 2)) < 2;
-        } else{
-            return x == Cat.getX() && y == Cat.getY();
+    public static boolean isInCatZone(Actor Harry, Object Cat){
+        for (int i = Harry.getX() - 1; i < Harry.getX() + 2; ++i){
+            for (int j = Harry.getX() - 1; j < Harry.getX() + 2; ++j){
+                if (!Harry.isHaveCloak()) {
+                    if (Math.sqrt(Math.pow(i - Cat.getX(), 2) + Math.pow(j - Cat.getY(), 2)) < 2){
+                        map[i][j] = -1;
+                        return true;
+                    }
+                } else{
+                    if (i == Cat.getX() && j == Cat.getY()){
+                        map[i][j] = -1;
+                        return true;
+                    }
+                }
+            }
         }
+        return false;
     }
 
     public static boolean isInLegalZone(int x, int y){
-
         return x >= 0 && x < 9 && y < 9 && y >= 0;
     }
 
-    public static double G(int x, int y, Actor Harry){
-
-        return Math.sqrt(Math.pow(x - Harry.getX(),2) + Math.sqrt(Math.pow(y - Harry.getY(), 2)));
-    }
-
     public static double H(int x, int y, Object Destination){
-
         return Math.sqrt(Math.pow(x - Destination.getX(), 2) + Math.pow(y - Destination.getY(),2));
     }
 
-    public static ArrayList<Object> aStar(Actor Harry, Object Filch, Object Cat, Object Cloak, Object Exit){
-
-        ArrayList<Object> visitedCells = new ArrayList<>();
-        ArrayList<Object> uniqueCells = new ArrayList<>();
-        PriorityQueue<Map.Entry<Object,Double>> priorityQueue = new PriorityQueue<>(Map.Entry.comparingByValue());
-        Object Current = new Object(Harry.getX(), Harry.getY());
-        visitedCells.add(Current);
-        uniqueCells.add(Current);
-        try {
-            while (Current != Exit) {
-                for (int i = Current.getX() - 1; i < Current.getX() + 2; ++i) {
-                    for (int j = Current.getY() - 1; j < Current.getY() + 2; ++j) {
-                        if (!isInLegalZone(i, j) || isInCatZone(i, j, Harry, Cat) || isInFilchZone(i, j, Harry, Filch) || i == Current.getX() && j == Current.getY()) {
-                            continue;
-                        }
-                        boolean visited = false;
-                        for (Object uniqueCell : uniqueCells) {
-                            if (i == uniqueCell.getX() && j == uniqueCell.getY()) {
-                                visited = true;
-                                break;
-                            }
-                        }
-                        if (visited) continue;
-
-                        checkCloak(i, j, Harry, Cloak);
-                        Object Cell = new Object(i, j);
-                        uniqueCells.add(Cell);
-                        priorityQueue.add(new AbstractMap.SimpleEntry<>(Cell, G(i, j, Harry) + H(i, j, Exit)));
-                    }
-                }
-                if (Math.abs(Current.getX() - priorityQueue.element().getKey().getX()) >= 2 || Math.abs(Current.getY() - priorityQueue.element().getKey().getY()) >= 2) {
-                    priorityQueue.remove(priorityQueue.element());
-                    continue;
-                }
-                Current = priorityQueue.poll().getKey();
-                if (isInExitCell(Current.getX(), Current.getY(), Exit)) {
-                    visitedCells.add(Exit);
-                    return visitedCells;
-                }
-                visitedCells.add(Current);
+    public static ArrayList<Object> aStar(Object Start, Object Finish) {
+        Object Current;
+        PriorityQueue<Map.Entry<Object, Double>> priorityQueue = new PriorityQueue<>(Map.Entry.comparingByValue());
+        priorityQueue.add(new AbstractMap.SimpleEntry<>(Start, 0.0));
+        int[][] gScore = new int[9][9];
+        for (int i = 0; i < 9; ++i) {
+            for (int j = 0; j < 9; ++j) {
+                gScore[i][j] = 100;
             }
-        } catch (NoSuchElementException e){
-            System.out.println("Impossible to reach exit");
-            System.exit(0);
         }
-        return visitedCells;
+        gScore[Start.getX()][Start.getY()] = 0;
+        Object[][] cameFrom = new Object[9][9];
+        ArrayList<Object> path = new ArrayList<>();
+        while (!priorityQueue.isEmpty()) {
+            Current = priorityQueue.poll().getKey();
+            if (Current.getX() == Finish.getX() && Current.getY() == Finish.getY()) {
+                break;
+            }
+            for (int i = Current.getX() - 1; i < Current.getX() + 2; ++i) {
+                for (int j = Current.getY() - 1; j < Current.getY() + 2; ++j) {
+                    if (!isInLegalZone(i, j)) {
+                        continue;
+                    }
+                    if (map[i][j] == -1  || gScore[i][j] != 100 || gScore[i][j] <= gScore[Current.getX()][Current.getY()] + 1){
+                        continue;
+                    }
+                    gScore[i][j] = gScore[Current.getX()][Current.getY()] + 1;
+                    cameFrom[i][j] = Current;
+                    priorityQueue.add(new AbstractMap.SimpleEntry<>(new Object(i, j), gScore[i][j] + H(i, j, Finish)));
+                }
+            }
+        }
+        if (cameFrom[Finish.getX()][Finish.getY()] == null){
+            return path;
+        }
+        Object Movement = Finish;
+        while (Movement.getX() == Finish.getX() && Movement.getY() == Finish.getY()) {
+            path.add(Movement);
+            Movement = cameFrom[Movement.getX()][Movement.getY()];
+        }
+        Collections.reverse(path);
+        return path;
     }
-    public static void followAStar(Actor Harry, Object Filch, Object Cat, Object Cloak, Object Exit){
-        ArrayList<Object> cellsToMove = aStar(Harry, Filch, Cat, Cloak, Exit);
 
-        for (Object object : cellsToMove) {
-            System.out.println("[" + String.valueOf(object.getX()) + ", " + String.valueOf(object.getY()) + "]");
-        }
+    public static void followAStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit) {
+
+        ArrayList<Object> cellsToMove = aStar(Harry, Exit);
+//        while (Harry.getX() != Exit.getX() && Harry.getY() != Exit.getY() && !Harry.isHaveBook()) {
+//            if (isInCatZone(Harry, Cat) || isInFilchZone(Harry, Filch)) {
+//               cellsToMove = aStar(Harry, Exit);
+//            }
+//            Harry.setX(Harry.getX() + cellsToMove.get(0).getX());
+//            Harry.setY(Harry.getY() + cellsToMove.get(0).getY());
+//            checkArticle(Harry, Book);
+//            checkArticle(Harry, Cloak);
+//        }
     }
 }
