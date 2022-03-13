@@ -272,10 +272,14 @@ class Actor extends Object{
                     if (!isInLegalZone(i, j)) {
                         continue;
                     }
-                    if (map[i][j] == -1  || gScore[i][j] != 100 || gScore[i][j] <= gScore[Current.getX()][Current.getY()] + 1){
+                    if (map[i][j] == -1){
                         continue;
                     }
-                    gScore[i][j] = gScore[Current.getX()][Current.getY()] + 1;
+                    int newGScore = gScore[Current.getX()][Current.getY()] + 1;
+                    if (gScore[i][j] <= newGScore){
+                        continue;
+                    }
+                    gScore[i][j] = newGScore;
                     cameFrom[i][j] = Current;
                     priorityQueue.add(new AbstractMap.SimpleEntry<>(new Object(i, j), gScore[i][j] + H(i, j, Finish)));
                 }
@@ -285,7 +289,7 @@ class Actor extends Object{
             return path;
         }
         Object Movement = Finish;
-        while (Movement.getX() == Finish.getX() && Movement.getY() == Finish.getY()) {
+        while (Movement != null && Movement.getX() != Start.getX() && Movement.getY() != Start.getY()) {
             path.add(Movement);
             Movement = cameFrom[Movement.getX()][Movement.getY()];
         }
@@ -296,6 +300,10 @@ class Actor extends Object{
     public static void followAStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit) {
 
         ArrayList<Object> cellsToMove = aStar(Harry, Exit);
+        for (int i = 0; i < cellsToMove.size(); ++i){
+            System.out.println(cellsToMove.get(i).getX());
+            System.out.println(cellsToMove.get(i).getY());
+        }
 //        while (Harry.getX() != Exit.getX() && Harry.getY() != Exit.getY() && !Harry.isHaveBook()) {
 //            if (isInCatZone(Harry, Cat) || isInFilchZone(Harry, Filch)) {
 //               cellsToMove = aStar(Harry, Exit);
