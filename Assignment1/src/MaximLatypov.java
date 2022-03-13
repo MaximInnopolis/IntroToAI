@@ -300,18 +300,18 @@ class Actor extends Object{
     public static void followAStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit) {
 
         ArrayList<Object> cellsToMove = aStar(Harry, Exit);
-        for (int i = 0; i < cellsToMove.size(); ++i){
-            System.out.println(cellsToMove.get(i).getX());
-            System.out.println(cellsToMove.get(i).getY());
+
+        while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY()) {
+            if (isInCatZone(Harry, Cat) || isInFilchZone(Harry, Filch)) {
+               cellsToMove = aStar(Harry, Exit);
+            }
+            Harry.setX(cellsToMove.get(0).getX());
+            Harry.setY(cellsToMove.get(0).getY());
+            cellsToMove.remove(cellsToMove.get(0));
+            System.out.println(Harry.getX());
+            System.out.println(Harry.getY());
+            checkArticle(Harry, Book);
+            checkArticle(Harry, Cloak);
         }
-//        while (Harry.getX() != Exit.getX() && Harry.getY() != Exit.getY() && !Harry.isHaveBook()) {
-//            if (isInCatZone(Harry, Cat) || isInFilchZone(Harry, Filch)) {
-//               cellsToMove = aStar(Harry, Exit);
-//            }
-//            Harry.setX(Harry.getX() + cellsToMove.get(0).getX());
-//            Harry.setY(Harry.getY() + cellsToMove.get(0).getY());
-//            checkArticle(Harry, Book);
-//            checkArticle(Harry, Cloak);
-//        }
     }
 }
