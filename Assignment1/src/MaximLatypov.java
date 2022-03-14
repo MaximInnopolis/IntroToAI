@@ -51,7 +51,7 @@ public class MaximLatypov {
         Cell Exit = new Cell(Character.getNumericValue(input_1.charAt(31)), Character.getNumericValue(input_1.charAt(33)));
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
-        Actor.followAStar(Harry,Filch,Cat,Book,Cloak,Exit);
+        Actor.followAStar(Harry,Filch,Cat,Book,Cloak,Exit, Integer.parseInt(scenario_1));
         System.out.println("-> This is the place where output ends");
     }
 
@@ -320,14 +320,14 @@ class Actor extends Cell{
         return false;
     }
 
-    public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit) {
+    public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario) {
 
         ArrayList<Cell> currentPath = aStar(Harry, Exit);
         ArrayList<Cell> visitedCells = new ArrayList<>();
         visitedCells.add(new Cell(0,0));
 
         while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY() || !Harry.isHaveBook()) {
-            if (senseCatZone(Harry, Cat) || senseFilchZone(Harry, Filch)) {
+            if (senseCatZone(Harry, Cat, scenario) || senseFilchZone(Harry, Filch,scenario)) {
                 currentPath = aStar(Harry, Exit);
             }
             if (currentPath.isEmpty()) {
