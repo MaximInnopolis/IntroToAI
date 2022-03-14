@@ -1,52 +1,76 @@
 import com.sun.org.apache.xerces.internal.impl.xpath.XPath;
+import com.sun.xml.internal.ws.util.StringUtils;
 import jdk.internal.org.objectweb.asm.tree.FieldInsnNode;
 
 import java.io.*;
 import java.lang.reflect.Array;
+import java.sql.SQLOutput;
 import java.util.*;
 
 public class MaximLatypov {
 
     public static void main(String[] args) {
 
-        String input = "";
-        String scenario = "";
+//        String input = "";
+//        String scenario = "";
 
-        try{
-            FileReader fileReader = new FileReader("C:\\Users\\Max\\OneDrive\\Документы\\GitHub\\IntroToAI\\Assignment1\\src\\input.txt");
-            BufferedReader reader = new BufferedReader(fileReader);
-            input = reader.readLine();
-            scenario = reader.readLine();
+//        try{
+//            FileReader fileReader = new FileReader("C:\\Users\\Max\\OneDrive\\Документы\\GitHub\\IntroToAI\\Assignment1\\src\\input.txt");
+//            BufferedReader reader = new BufferedReader(fileReader);
+//            input = reader.readLine();
+//            scenario = reader.readLine();
+//
+//            String illegalLine = reader.readLine();
+//            if (illegalLine != null) {
+//                System.out.println("Error occurred, invalid input: illegal number of input strings");
+//                System.exit(0);
+//            }
+//        } catch (FileNotFoundException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
-            String illegalLine = reader.readLine();
-            if (illegalLine != null) {
-                System.out.println("Error occurred, invalid input: illegal number of input strings");
-                System.exit(0);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        Scanner in = new Scanner(System.in);
+        System.out.println("Please enter first string of input:");
+        String input_1 = in.nextLine();
+        System.out.println("Please enter scenario:");
+        int scenario_1 = in.nextInt();
 
-        findScenarioError(scenario);
-        findInputValueError(input);
+        String input_2 = generateInput();
+        int scenario_2 = generateScenario();
 
-        Actor Harry = new Actor(Character.getNumericValue(input.charAt(1)), Character.getNumericValue(input.charAt(3)));
-        Object Filch = new Object(Character.getNumericValue(input.charAt(7)), Character.getNumericValue(input.charAt(9)));
-        Object Cat = new Object(Character.getNumericValue(input.charAt(13)), Character.getNumericValue(input.charAt(15)));
-        Object Book = new Object(Character.getNumericValue(input.charAt(19)), Character.getNumericValue(input.charAt(21)));
-        Object Cloak = new Object(Character.getNumericValue(input.charAt(25)), Character.getNumericValue(input.charAt(27)));
-        Object Exit = new Object(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
+        findScenarioError(scenario_1);
+        findInputValueError(input_1);
+
+        Actor Harry = new Actor(Character.getNumericValue(input_1.charAt(1)), Character.getNumericValue(input_1.charAt(3)));
+        Cell Filch = new Cell(Character.getNumericValue(input_1.charAt(7)), Character.getNumericValue(input_1.charAt(9)));
+        Cell Cat = new Cell(Character.getNumericValue(input_1.charAt(13)), Character.getNumericValue(input_1.charAt(15)));
+        Cell Book = new Cell(Character.getNumericValue(input_1.charAt(19)), Character.getNumericValue(input_1.charAt(21)));
+        Cell Cloak = new Cell(Character.getNumericValue(input_1.charAt(25)), Character.getNumericValue(input_1.charAt(27)));
+        Cell Exit = new Cell(Character.getNumericValue(input_1.charAt(31)), Character.getNumericValue(input_1.charAt(33)));
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
         Actor.followAStar(Harry,Filch,Cat,Book,Cloak,Exit);
-//        Actor.aStar(Harry, Cloak, Exit);
         System.out.println("-> This is the place where output ends");
     }
 
-    public static void findScenarioError(String scenario){
-        if(Integer.parseInt(scenario) != 1 && Integer.parseInt(scenario) != 2){
+    public static int generateScenario(){
+        return (int)(1 + Math.random()*2);
+    }
+
+    public static String generateInput(){
+        StringBuilder input = new StringBuilder();
+
+        input.append("[").append(0).append(",").append(0).append("] ");
+        for (int i = 0; i < 5; ++i){
+            input.append("[").append(new Random().nextInt(8)).append(",").append(new Random().nextInt(8)).append("] ");
+        }
+        return (input.length() == 0) ? null : (input.substring(0, input.length() - 1));
+    }
+
+    public static void findScenarioError(int scenario){
+        if(scenario != 1 && scenario != 2){
             System.out.println("Error occurred, invalid input: input scenario out of legal range");
             System.exit(0);
         }
@@ -79,7 +103,7 @@ public class MaximLatypov {
         }
     }
 
-    public static void findLogicError(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit){
+    public static void findLogicError(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit){
 
         if (Math.sqrt(Math.pow(Harry.getX() - Filch.getX(), 2) + Math.pow(Harry.getY() - Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Harry is already in inspector's zone");
@@ -122,12 +146,12 @@ public class MaximLatypov {
     }
 }
 
-class Object{
+class Cell{
 
     private int x;
     private int y;
 
-    public Object(int x, int y){
+    public Cell(int x, int y){
         this.x = x;
         this.y = y;
     }
@@ -149,7 +173,7 @@ class Object{
     }
 }
 
-class Actor extends Object{
+class Actor extends Cell{
 
     private boolean haveBook;
     private boolean haveCloak;
@@ -181,38 +205,28 @@ class Actor extends Object{
         }
     }
 
-    public static boolean isInBookCell(int x, int y, Actor Harry, Object Book){//Might need to change
-
-        if (Harry.isHaveBook()){
-            return false;
-        }
-        if (x == Book.getX() && y == Book.getY()){
-            Harry.setHaveBook(true);
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isInExitCell(int x, int y, Object Exit){
-        return x == Exit.getX() && y == Exit.getY();
-    }
-
-    public static void checkArticle(Actor Harry, Object Article){
-        if (Harry.getX() == Article.getX() && Harry.getY() == Article.getY()) {
+    public static void checkCloak(Actor Harry, Cell Cloak){
+        if (Harry.getX() == Cloak.getX() && Harry.getY() == Cloak.getY()) {
             Harry.setHaveCloak(true);
         }
     }
 
-    public static boolean isInFilchZone(Actor Harry, Object Filch) {
+    public static void checkBook(Actor Harry, Cell Book){
+        if (Harry.getX() == Book.getX() && Harry.getY() == Book.getY()) {
+            Harry.setHaveBook(true);
+        }
+    }
+
+    public static boolean senseFilchZone(Actor Harry, Cell Filch) {
         for (int i = Harry.getX() - 1; i < Harry.getX() + 2; ++i) {
             for (int j = Harry.getX() - 1; j < Harry.getX() + 2; ++j) {
                 if (!Harry.isHaveCloak()) {
-                   if (Math.sqrt(Math.pow(Harry.getX() - Filch.getX(), 2) + Math.pow(Harry.getY() - Filch.getY(), 2)) < 3){
+                   if (Math.sqrt(Math.pow(i - Filch.getX(), 2) + Math.pow(j - Filch.getY(), 2)) < 3){
                        map[i][j] = -1;
                        return true;
                    }
                 } else {
-                    if (Harry.getX() == Filch.getX() && Harry.getY() == Filch.getY()){
+                    if (i == Filch.getX() && j == Filch.getY()){
                         map[i][j] = -1;
                         return true;
                     }
@@ -222,7 +236,7 @@ class Actor extends Object{
         return false;
     }
 
-    public static boolean isInCatZone(Actor Harry, Object Cat){
+    public static boolean senseCatZone(Actor Harry, Cell Cat){
         for (int i = Harry.getX() - 1; i < Harry.getX() + 2; ++i){
             for (int j = Harry.getX() - 1; j < Harry.getX() + 2; ++j){
                 if (!Harry.isHaveCloak()) {
@@ -245,13 +259,13 @@ class Actor extends Object{
         return x >= 0 && x < 9 && y < 9 && y >= 0;
     }
 
-    public static double H(int x, int y, Object Destination){
+    public static double H(int x, int y, Cell Destination){
         return Math.sqrt(Math.pow(x - Destination.getX(), 2) + Math.pow(y - Destination.getY(),2));
     }
 
-    public static ArrayList<Object> aStar(Object Start, Object Finish) {
-        Object Current;
-        PriorityQueue<Map.Entry<Object, Double>> priorityQueue = new PriorityQueue<>(Map.Entry.comparingByValue());
+    public static ArrayList<Cell> aStar(Actor Start, Cell Finish) {
+        Cell Current;
+        PriorityQueue<Map.Entry<Cell, Double>> priorityQueue = new PriorityQueue<>(Map.Entry.comparingByValue());
         priorityQueue.add(new AbstractMap.SimpleEntry<>(Start, 0.0));
         int[][] gScore = new int[9][9];
         for (int i = 0; i < 9; ++i) {
@@ -260,8 +274,8 @@ class Actor extends Object{
             }
         }
         gScore[Start.getX()][Start.getY()] = 0;
-        Object[][] cameFrom = new Object[9][9];
-        ArrayList<Object> path = new ArrayList<>();
+        Cell[][] cameFrom = new Cell[9][9];
+        ArrayList<Cell> path = new ArrayList<>();
         while (!priorityQueue.isEmpty()) {
             Current = priorityQueue.poll().getKey();
             if (Current.getX() == Finish.getX() && Current.getY() == Finish.getY()) {
@@ -281,14 +295,14 @@ class Actor extends Object{
                     }
                     gScore[i][j] = newGScore;
                     cameFrom[i][j] = Current;
-                    priorityQueue.add(new AbstractMap.SimpleEntry<>(new Object(i, j), gScore[i][j] + H(i, j, Finish)));
+                    priorityQueue.add(new AbstractMap.SimpleEntry<>(new Cell(i, j), gScore[i][j] + H(i, j, Finish)));
                 }
             }
         }
         if (cameFrom[Finish.getX()][Finish.getY()] == null){
             return path;
         }
-        Object Movement = Finish;
+        Cell Movement = Finish;
         while (Movement != null && Movement.getX() != Start.getX() && Movement.getY() != Start.getY()) {
             path.add(Movement);
             Movement = cameFrom[Movement.getX()][Movement.getY()];
@@ -297,21 +311,73 @@ class Actor extends Object{
         return path;
     }
 
-    public static void followAStar(Actor Harry, Object Filch, Object Cat, Object Book, Object Cloak, Object Exit) {
-
-        ArrayList<Object> cellsToMove = aStar(Harry, Exit);
-
-        while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY()) {
-            if (isInCatZone(Harry, Cat) || isInFilchZone(Harry, Filch)) {
-               cellsToMove = aStar(Harry, Exit);
+    public static boolean isVisited(int x, int y, ArrayList<Cell> visitedCells){
+        for (int i = 0; i < visitedCells.size(); ++i){
+            if (visitedCells.get(i).getX() == x && visitedCells.get(i).getY() == y){
+                return true;
             }
-            Harry.setX(cellsToMove.get(0).getX());
-            Harry.setY(cellsToMove.get(0).getY());
-            cellsToMove.remove(cellsToMove.get(0));
+        }
+        return false;
+    }
+
+    public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit) {
+
+        ArrayList<Cell> currentPath = aStar(Harry, Exit);
+        ArrayList<Cell> visitedCells = new ArrayList<>();
+        visitedCells.add(new Cell(0,0));
+
+        while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY() || !Harry.isHaveBook()) {
+            if (senseCatZone(Harry, Cat) || senseFilchZone(Harry, Filch)) {
+                currentPath = aStar(Harry, Exit);
+            }
+            if (currentPath.isEmpty()) {
+                ArrayList<Cell> shortestPath = null;
+                boolean flag =  false;
+                for (int i = 0; i < 9; ++i) {
+                    for (int j = 0; j < 9; ++j) {
+                        if (map[i][j] == -1){
+                            continue;
+                        }
+                        if (isVisited(i, j, visitedCells)) {
+                            continue;
+                        }
+                        currentPath = aStar(Harry, new Cell(i, j));
+                        if (currentPath.isEmpty()) {
+                            continue;
+                        }
+                        if (shortestPath == null || shortestPath.size() > currentPath.size()) {
+                            shortestPath = currentPath;
+                        }
+                        if (shortestPath.size() == 1){
+                            flag = true;
+                            break;
+                        }
+                    }
+                    if (flag){
+                        break;
+                    }
+                }
+                if (shortestPath == null) {
+                    System.out.println("Impossible to reach exit");
+                }
+                currentPath = shortestPath;
+//                Harry.setX(shortestPath.get(0).getX());
+//                Harry.setY(shortestPath.get(0).getY());
+//                shortestPath.remove(0);
+//                visitedCells.add(new Object(Harry.getX(), Harry.getY()));
+//                System.out.println(Harry.getX());
+//                System.out.println(Harry.getY());
+//                checkArticle(Harry, Book);
+//                checkArticle(Harry, Cloak);
+            }
+            Harry.setX(currentPath.get(0).getX());
+            Harry.setY(currentPath.get(0).getY());
+            currentPath.remove(0);
+            visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
             System.out.println(Harry.getX());
             System.out.println(Harry.getY());
-            checkArticle(Harry, Book);
-            checkArticle(Harry, Cloak);
+            checkBook(Harry, Book);
+            checkCloak(Harry, Cloak);
         }
     }
 }
