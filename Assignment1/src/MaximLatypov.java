@@ -11,31 +11,31 @@ public class MaximLatypov {
 
     public static void main(String[] args) {
 
-//        String input = "";
-//        String scenario = "";
+        String input_1 = "";
+        String scenario_1 = "";
 
-//        try{
-//            FileReader fileReader = new FileReader("C:\\Users\\Max\\OneDrive\\Документы\\GitHub\\IntroToAI\\Assignment1\\src\\input.txt");
-//            BufferedReader reader = new BufferedReader(fileReader);
-//            input = reader.readLine();
-//            scenario = reader.readLine();
-//
-//            String illegalLine = reader.readLine();
-//            if (illegalLine != null) {
-//                System.out.println("Error occurred, invalid input: illegal number of input strings");
-//                System.exit(0);
-//            }
-//        } catch (FileNotFoundException e) {
-//            e.printStackTrace();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try{
+            FileReader fileReader = new FileReader("C:\\Users\\Max\\OneDrive\\Документы\\GitHub\\IntroToAI\\Assignment1\\src\\input.txt");
+            BufferedReader reader = new BufferedReader(fileReader);
+            input_1 = reader.readLine();
+            scenario_1 = reader.readLine();
 
-        Scanner in = new Scanner(System.in);
-        System.out.println("Please enter first string of input:");
-        String input_1 = in.nextLine();
-        System.out.println("Please enter scenario:");
-        int scenario_1 = in.nextInt();
+            String illegalLine = reader.readLine();
+            if (illegalLine != null) {
+                System.out.println("Error occurred, invalid input: illegal number of input strings");
+                System.exit(0);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+//        Scanner in = new Scanner(System.in);
+//        System.out.println("Please enter first string of input:");
+//        String input_1 = in.nextLine();
+//        System.out.println("Please enter scenario:");
+//        int scenario_1 = in.nextInt();
 
         String input_2 = generateInput();
         int scenario_2 = generateScenario();
@@ -69,8 +69,8 @@ public class MaximLatypov {
         return (input.length() == 0) ? null : (input.substring(0, input.length() - 1));
     }
 
-    public static void findScenarioError(int scenario){
-        if(scenario != 1 && scenario != 2){
+    public static void findScenarioError(String scenario){
+        if(Integer.parseInt(scenario) != 1 && Integer.parseInt(scenario) != 2){
             System.out.println("Error occurred, invalid input: input scenario out of legal range");
             System.exit(0);
         }
@@ -217,9 +217,9 @@ class Actor extends Cell{
         }
     }
 
-    public static boolean senseFilchZone(Actor Harry, Cell Filch) {
-        for (int i = Harry.getX() - 1; i < Harry.getX() + 2; ++i) {
-            for (int j = Harry.getX() - 1; j < Harry.getX() + 2; ++j) {
+    public static boolean senseFilchZone(Actor Harry, Cell Filch, int scenario) {
+        for (int i = Harry.getX() - scenario; i < Harry.getX() + scenario + 1; ++i) {
+            for (int j = Harry.getX() - scenario; j < Harry.getX() + scenario + 1; ++j) {
                 if (!Harry.isHaveCloak()) {
                    if (Math.sqrt(Math.pow(i - Filch.getX(), 2) + Math.pow(j - Filch.getY(), 2)) < 3){
                        map[i][j] = -1;
@@ -236,9 +236,9 @@ class Actor extends Cell{
         return false;
     }
 
-    public static boolean senseCatZone(Actor Harry, Cell Cat){
-        for (int i = Harry.getX() - 1; i < Harry.getX() + 2; ++i){
-            for (int j = Harry.getX() - 1; j < Harry.getX() + 2; ++j){
+    public static boolean senseCatZone(Actor Harry, Cell Cat, int scenario){
+        for (int i = Harry.getX() - scenario; i < Harry.getX() + scenario + 1; ++i){
+            for (int j = Harry.getX() - scenario; j < Harry.getX() + scenario + 1; ++j){
                 if (!Harry.isHaveCloak()) {
                     if (Math.sqrt(Math.pow(i - Cat.getX(), 2) + Math.pow(j - Cat.getY(), 2)) < 2){
                         map[i][j] = -1;
@@ -312,8 +312,8 @@ class Actor extends Cell{
     }
 
     public static boolean isVisited(int x, int y, ArrayList<Cell> visitedCells){
-        for (int i = 0; i < visitedCells.size(); ++i){
-            if (visitedCells.get(i).getX() == x && visitedCells.get(i).getY() == y){
+        for (Cell visitedCell : visitedCells) {
+            if (visitedCell.getX() == x && visitedCell.getY() == y) {
                 return true;
             }
         }
@@ -370,6 +370,7 @@ class Actor extends Cell{
 //                checkArticle(Harry, Book);
 //                checkArticle(Harry, Cloak);
             }
+            assert currentPath != null;
             Harry.setX(currentPath.get(0).getX());
             Harry.setY(currentPath.get(0).getY());
             currentPath.remove(0);
