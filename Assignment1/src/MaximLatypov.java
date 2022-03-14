@@ -178,6 +178,7 @@ class Actor extends Cell{
     private boolean haveBook;
     private boolean haveCloak;
     public static int[][] map = new int[9][9];
+    private int direction;
 
     public boolean isHaveBook() {
         return haveBook;
@@ -187,6 +188,8 @@ class Actor extends Cell{
         return haveCloak;
     }
 
+    public int getDirection(){ return direction;}
+
     public void setHaveBook(boolean haveBook) {
         this.haveBook = haveBook;
     }
@@ -195,6 +198,7 @@ class Actor extends Cell{
         this.haveCloak = haveCloak;
     }
 
+    public void setDirection(int direction){this.direction = direction;}
 
     public Actor(int x, int y) {
         super(x, y);
@@ -236,6 +240,14 @@ class Actor extends Cell{
         return false;
     }
 
+    public static boolean isInFilchZone(int x, int y, Actor Harry, Cell Filch){
+        if (!Harry.isHaveCloak()) {
+            return Math.sqrt(Math.pow(x - Filch.getX(), 2) + Math.pow(y - Filch.getY(), 2)) < 3;
+        } else {
+            return x == Filch.getX() && y == Filch.getY();
+        }
+    }
+
     public static boolean senseCatZone(Actor Harry, Cell Cat, int scenario){
         for (int i = Harry.getX() - scenario; i < Harry.getX() + scenario + 1; ++i){
             for (int j = Harry.getX() - scenario; j < Harry.getX() + scenario + 1; ++j){
@@ -253,6 +265,14 @@ class Actor extends Cell{
             }
         }
         return false;
+    }
+
+    public static boolean isInCatZone(int x, int y, Actor Harry, Cell Cat){
+        if (!Harry.isHaveCloak()){
+            return Math.sqrt(Math.pow(x - Cat.getX(), 2) + Math.pow(y - Cat.getY(), 2)) < 2;
+        } else {
+            return x == Cat.getX() && y == Cat.getY();
+        }
     }
 
     public static boolean isInLegalZone(int x, int y){
@@ -318,6 +338,53 @@ class Actor extends Cell{
             }
         }
         return false;
+    }
+
+    public static ArrayList<Cell> backtracking(Actor Harry, Cell Filch, Cell Cat){
+        ArrayList<Cell> visitedCells = new ArrayList<>();
+        Stack<Actor> stack = new Stack<Actor>();
+        Actor temp = Harry;
+        stack.push(temp);
+        while (!stack.isEmpty()) {
+            temp = stack.peek();
+            int dir = temp.getDirection();
+            Harry.setX(temp.getX());
+            Harry.setY(temp.getY());
+
+            temp.setDirection(temp.getDirection() + 1);
+            stack.pop();
+            stack.push(temp);
+
+            if (Harry.isHaveBook()) {
+                return visitedCells;
+            }
+
+            if (dir == 0) {
+                if (Harry.getX() - 1 >= 0 && !isInCatZone(Harry.getX() - 1, Harry.getY(), Harry, Cat) && !isInFilchZone(Harry.getX() - 1, Harry.getY(), Harry, Cat) && isVisited(Harry.getX() - 1, Harry.getY(), visitedCells)) {
+                    Actor temp1 = new Actor(Harry.getX() - 1, Harry.getY());
+                    stack.push(temp1);
+                }
+            } else if (dir == 1) {
+                if (Harry.getY() - 1 >= 0 && !isInCatZone(Harry.getX(), Harry.getY() - 1, Harry, Cat) && !isInFilchZone(Harry.getX(), Harry.getY() - 1, Harry, Cat) && isVisited(Harry.getX(), Harry.getY() - 1, visitedCells)) {
+                    Actor temp1 = new Actor(Harry.getX(), Harry.getY() - 1);
+                    stack.push(temp1);
+                }
+            } else if (dir == 2) {
+                if (Harry.getX() + 1 < 9 && !isInCatZone(Harry.getX() + 1, Harry.getY(), Harry, Cat) && !isInFilchZone(Harry.getX() + 1, Harry.getY(), Harry, Cat) && isVisited(Harry.getX() + 1, Harry.getY(), visitedCells)) {
+                    Actor temp1 = new Actor(Harry.getX() + 1, Harry.getY());
+                    stack.push(temp1);
+                }
+            } else if (dir == 3) {
+                if (Harry.getY() + 1 < 9 && !isInCatZone(Harry.getX(), Harry.getY() + 1, Harry, Cat) && !isInFilchZone(Harry.getX(), Harry.getY() + 1, Harry, Cat) && isVisited(Harry.getX(), Harry.getY() + 1, visitedCells)) {
+                    Actor temp1 = new Actor(Harry.getX(), Harry.getY() + 1);
+                    stack.push(temp1);
+                }
+            } else {
+                visitedCells.add(temp);
+                stack.pop();
+            }
+        }
+        return visitedCells;
     }
 
     public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario) {
