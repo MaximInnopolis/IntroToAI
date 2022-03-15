@@ -45,8 +45,8 @@ public class MaximLatypov {
         Cell Exit = new Cell(Character.getNumericValue(input_1.charAt(31)), Character.getNumericValue(input_1.charAt(33)));
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
-        Actor.followBacktracking(Harry,Filch,Cat,Book,Cloak,Exit,Integer.parseInt(scenario_1));
-//        Actor.followAStar(Harry,Filch,Cat,Book,Cloak,Exit, Integer.parseInt(scenario_1));
+//        Actor.followBacktracking(Harry,Filch,Cat,Book,Cloak,Exit,Integer.parseInt(scenario_1));
+        Actor.followAStar(Harry,Filch,Cat,Book,Cloak,Exit, Integer.parseInt(scenario_1));
         System.out.println("-> This is the place where output ends");
     }
 
