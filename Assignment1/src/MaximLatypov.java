@@ -1,3 +1,4 @@
+import javax.swing.text.DefaultEditorKit;
 import java.io.*;
 import java.util.*;
 
@@ -45,8 +46,8 @@ public class MaximLatypov {
         Cell Exit = new Cell(Character.getNumericValue(input_1.charAt(31)), Character.getNumericValue(input_1.charAt(33)));
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
-//        Actor.test(Harry,Filch,Cat,Book,Cloak,Exit,Integer.parseInt(scenario_1));
-        Actor.followAStar(Harry,Filch,Cat,Book,Cloak,Exit, Integer.parseInt(scenario_1));
+        Actor.followBacktracking(Harry,Filch,Cat,Book,Cloak,Exit,Integer.parseInt(scenario_1));
+//        Actor.followAStar(Harry,Filch,Cat,Book,Cloak,Exit, Integer.parseInt(scenario_1));
         System.out.println("-> This is the place where output ends");
     }
 
@@ -173,6 +174,7 @@ class Actor extends Cell{
     private boolean haveBook;
     private boolean haveCloak;
     public static int[][] map = new int[9][9];
+    public static Stack<Cell> stack;
     private int direction;
 
     public boolean isHaveBook() {
@@ -361,68 +363,62 @@ class Actor extends Cell{
         return false;
     }
 
-    public static ArrayList<Cell> backtracking(Actor Harry, Cell Filch, Cell Cat){
-        ArrayList<Cell> visitedCells = new ArrayList<>();
-        Stack<Actor> stack = new Stack<>();
-        Actor temp = Harry;
-        stack.push(temp);
-        while (!stack.isEmpty()) {
-            temp = stack.peek();
-            int dir = temp.getDirection();
-            Harry.setX(temp.getX());
-            Harry.setY(temp.getY());
-
-            temp.setDirection(temp.getDirection() + 1);
-            stack.pop();
-            stack.push(temp);
-
-            if (Harry.isHaveBook()) {
-                return visitedCells;
-            }
-
-            if (dir == 0) {
-                if (Harry.getX() - 1 >= 0 && !isInCatZone(Harry.getX() - 1, Harry.getY(), Harry, Cat) && !isInFilchZone(Harry.getX() - 1, Harry.getY(), Harry, Filch) && isVisited(Harry.getX() - 1, Harry.getY(), visitedCells)) {
-                    Actor temp1 = new Actor(Harry.getX() - 1, Harry.getY());
-                    stack.push(temp1);
+    public static ArrayList<Cell> backtracking(Actor Harry, ArrayList<Cell> visitedCells){
+        ArrayList<Cell> path = new ArrayList<>();
+        Actor Current = Harry;
+        for (int i = Current.getX() - 1; i < Current.getX() + 2; ++i) {
+            for (int j = Current.getY() - 1; j < Current.getY() + 2; ++j) {
+                if (!isInLegalZone(i, j)) {
+                    continue;
                 }
-            } else if (dir == 1) {
-                if (Harry.getY() - 1 >= 0 && !isInCatZone(Harry.getX(), Harry.getY() - 1, Harry, Cat) && !isInFilchZone(Harry.getX(), Harry.getY() - 1, Harry, Filch) && isVisited(Harry.getX(), Harry.getY() - 1, visitedCells)) {
-                    Actor temp1 = new Actor(Harry.getX(), Harry.getY() - 1);
-                    stack.push(temp1);
+                if (map[i][j] == -1 || map[i][j] == 1) {
+                    continue;
                 }
-            } else if (dir == 2) {
-                if (Harry.getX() + 1 < 9 && !isInCatZone(Harry.getX() + 1, Harry.getY(), Harry, Cat) && !isInFilchZone(Harry.getX() + 1, Harry.getY(), Harry, Filch) && isVisited(Harry.getX() + 1, Harry.getY(), visitedCells)) {
-                    Actor temp1 = new Actor(Harry.getX() + 1, Harry.getY());
-                    stack.push(temp1);
+                if (isVisited(i, j, visitedCells)) {
+                    continue;
                 }
-            } else if (dir == 3) {
-                if (Harry.getY() + 1 < 9 && !isInCatZone(Harry.getX(), Harry.getY() + 1, Harry, Cat) && !isInFilchZone(Harry.getX(), Harry.getY() + 1, Harry, Filch) && isVisited(Harry.getX(), Harry.getY() + 1, visitedCells)) {
-                    Actor temp1 = new Actor(Harry.getX(), Harry.getY() + 1);
-                    stack.push(temp1);
-                }
-            } else {
-                visitedCells.add(temp);
-                stack.pop();
+                stack.push(Current);
+                path.add(new Cell(i, j));
+                return path;
             }
         }
-        return visitedCells;
+        if (stack.isEmpty()){
+            return null;
+        }
+        path.add(stack.pop());
+        return path;
     }
 
-    public static void test(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
-        ArrayList<Cell> currentPath = backtracking(Harry, Filch, Cat);
+    public static void followBacktracking(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
 
-        while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY()){
+        int stepCounter = 0;
+        ArrayList<Cell> visitedCells = new ArrayList<>();
+        visitedCells.add(new Cell(0,0));
+        ArrayList<Cell> currentPath = backtracking(Harry,visitedCells);
+
+        while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY() || !Harry.isHaveBook()) {
             senseCatZone(Harry, Cat, scenario);
-            senseFilchZone(Harry, Filch,scenario);
-            currentPath = backtracking(Harry, Filch, Cat);
+            senseFilchZone(Harry, Filch, scenario);
+            currentPath = backtracking(Harry, visitedCells);
             Harry.setX(currentPath.get(0).getX());
             Harry.setY(currentPath.get(0).getY());
-            currentPath.remove(currentPath.get(0));
-            System.out.println(Harry.getX());
-            System.out.println(Harry.getY());
+            if (isInCatZone(Harry.getX(), Harry.getY(),Harry, Cat) || isInFilchZone(Harry.getX(), Harry.getY(),Harry, Filch)){
+                System.out.println("Harry has been caught by inspector!!!");
+                return;
+            }
+            stepCounter++;
+            currentPath.remove(0);
+            visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
+            System.out.println("[" + Harry.getX() + "," + Harry.getY() + "]");
             checkBook(Harry, Book);
+            if (Harry.haveBook){
+                currentPath = backtracking(Harry, visitedCells);
+            }
             checkCloak(Harry, Cloak);
+            senseCatZone(Harry, Cat, scenario);
+            senseFilchZone(Harry, Filch, scenario);
         }
+        System.out.println(stepCounter);
     }
 
     public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario) {
@@ -477,9 +473,6 @@ class Actor extends Cell{
             }
             Harry.setX(currentPath.get(0).getX());
             Harry.setY(currentPath.get(0).getY());
-            if (Harry.getX() == 7 && Harry.getY() == 2){
-                System.out.println("found it!");
-            }
             if (isInCatZone(Harry.getX(), Harry.getY(),Harry, Cat) || isInFilchZone(Harry.getX(), Harry.getY(),Harry, Filch)){
                 System.out.println("Harry has been caught by inspector!!!");
                 return;
