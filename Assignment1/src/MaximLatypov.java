@@ -396,6 +396,7 @@ class Actor extends Cell{
             currentPath = backtracking(Harry, visitedCells);
             Harry.setX(currentPath.get(0).getX());
             Harry.setY(currentPath.get(0).getY());
+            System.out.println("[" + Harry.getX() + "," + Harry.getY() + "]");
             if (isInCatZone(Harry.getX(), Harry.getY(), Harry, Cat) || isInFilchZone(Harry.getX(), Harry.getY(),Harry, Filch)){
                 System.out.println("Harry has been caught by inspector!!!");
                 return;
@@ -412,6 +413,7 @@ class Actor extends Cell{
                     Harry.setX(cell.getX());
                     Harry.setY(cell.getY());
                     visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
+                    System.out.println("[" + Harry.getX() + "," + Harry.getY() + "]");
                 }
 //               while (stack.peek().getX() != Exit.getX() || stack.peek().getY() != Exit.getY()){
 //                   Cell temp = stack.pop();
@@ -422,9 +424,6 @@ class Actor extends Cell{
             } else {
                 visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
             }
-        }
-        for (Cell cell : visitedCells) {
-            System.out.println("[" + cell.getX() + "," + cell.getY() + "]");
         }
     }
 
