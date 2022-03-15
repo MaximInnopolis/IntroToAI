@@ -389,7 +389,6 @@ class Actor extends Cell{
         ArrayList<Cell> visitedCells = new ArrayList<>();
         visitedCells.add(new Cell(0,0));
         ArrayList<Cell> currentPath;
-        ArrayList<Cell> path = new ArrayList<>();
 
         while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY() || !Harry.isHaveBook()) {
             senseCatZone(Harry, Cat, scenario);
@@ -404,18 +403,27 @@ class Actor extends Cell{
             if (Harry.getX() == Exit.getX() && Harry.getY() == Exit.getY()){
                 isExitReached = true;
             }
-            if (isExitReached && Harry.isHaveBook()){
-               while (stack.peek().getX() != Exit.getX() || stack.peek().getY() != Exit.getY()){
-                   Harry.setX(stack.pop().getX());
-                   Harry.setX(stack.pop().getY());
-                   visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
-               }
-            }
-            visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
             checkBook(Harry, Book);
             checkCloak(Harry, Cloak);
+            if (isExitReached && Harry.isHaveBook()){
+                currentPath = aStar(Harry, Exit);
+                visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
+                for (Cell cell : currentPath){
+                    Harry.setX(cell.getX());
+                    Harry.setY(cell.getY());
+                    visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
+                }
+//               while (stack.peek().getX() != Exit.getX() || stack.peek().getY() != Exit.getY()){
+//                   Cell temp = stack.pop();
+//                   Harry.setX(temp.getX());
+//                   Harry.setY(temp.getY());
+//                   visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
+//               }
+            } else {
+                visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
+            }
         }
-        for (Cell cell : path) {
+        for (Cell cell : visitedCells) {
             System.out.println("[" + cell.getX() + "," + cell.getY() + "]");
         }
     }
