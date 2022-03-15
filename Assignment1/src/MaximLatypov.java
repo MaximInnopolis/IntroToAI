@@ -223,17 +223,18 @@ class Actor extends Cell{
     public static void senseFilchZone(Actor Harry, Cell Filch, int scenario) {
         for (int i = Harry.getX() - scenario; i < Harry.getX() + scenario + 1; ++i) {
             for (int j = Harry.getY() - scenario; j < Harry.getY() + scenario + 1; ++j) {
-                if (isInLegalZone(i,j)) {
-                    if (!Harry.isHaveCloak()){
-                        if (Math.sqrt(Math.pow(i - Filch.getX(), 2) + Math.pow(j - Filch.getY(), 2)) < 3) {
-                            map[i][j] = -1;
-                        }
-                    } else {
-                        if (i == Filch.getX() && j == Filch.getY()){
-                            map[i][j] = -1;
-                        } else{
-                            map[i][j] = 0;
-                        }
+                if (!isInLegalZone(i,j)) {
+                    continue;
+                }
+                if (!Harry.isHaveCloak()){
+                    if (Math.sqrt(Math.pow(i - Filch.getX(), 2) + Math.pow(j - Filch.getY(), 2)) < 3) {
+                        map[i][j] = -1;
+                    }
+                } else {
+                    if (i == Filch.getX() && j == Filch.getY()){
+                        map[i][j] = -1;
+                    } else{
+                        map[i][j] = 0;
                     }
                 }
             }
@@ -251,17 +252,18 @@ class Actor extends Cell{
     public static void senseCatZone(Actor Harry, Cell Cat, int scenario){
         for (int i = Harry.getX() - scenario; i < Harry.getX() + scenario + 1; ++i){
             for (int j = Harry.getY() - scenario; j < Harry.getY() + scenario + 1; ++j){
-                if (isInLegalZone(i,j)) {
-                    if (!Harry.isHaveCloak()) {
-                        if (Math.sqrt(Math.pow(i - Cat.getX(), 2) + Math.pow(j - Cat.getY(), 2)) < 2) {
-                            map[i][j] = -1;
-                        }
-                    } else {
-                        if (i == Cat.getX() && j == Cat.getY()) {
-                            map[i][j] = -1;
-                        } else{
-                            map[i][j] = 0;
-                        }
+                if (!isInLegalZone(i,j)) {
+                    continue;
+                }
+                if (!Harry.isHaveCloak()) {
+                    if (Math.sqrt(Math.pow(i - Cat.getX(), 2) + Math.pow(j - Cat.getY(), 2)) < 2) {
+                        map[i][j] = -1;
+                    }
+                } else {
+                    if (i == Cat.getX() && j == Cat.getY()) {
+                        map[i][j] = -1;
+                    } else{
+                        map[i][j] = 0;
                     }
                 }
             }
@@ -403,12 +405,12 @@ class Actor extends Cell{
 
     public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario) {
 
+        int stepCounter = 0;
         boolean isExitReached = false;
         ArrayList<Cell> currentPath = aStar(Harry, Exit);
         ArrayList<Cell> visitedCells = new ArrayList<>();
 
         visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
-
 
         while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY() || !Harry.isHaveBook()) {
             if (!isExitReached) {
@@ -451,6 +453,7 @@ class Actor extends Cell{
             assert currentPath != null;
             Harry.setX(currentPath.get(0).getX());
             Harry.setY(currentPath.get(0).getY());
+            stepCounter++;
             if (Harry.getX() == Exit.getX() || Harry.getY() == Exit.getY()){
                 isExitReached = true;
             }
@@ -468,5 +471,6 @@ class Actor extends Cell{
                 senseFilchZone(Harry, Filch, scenario);
             }
         }
+        System.out.println(stepCounter);
     }
 }
