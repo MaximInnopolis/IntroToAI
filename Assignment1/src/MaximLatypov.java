@@ -3,8 +3,8 @@ import java.util.*;
 public class MaximLatypov {
 
     public static void main(String[] args) {
-//        readFromConsole();
-        generateTest(50);
+        readFromConsole();
+//        generateTest(50);
         System.out.println("-> This is the place where output ends");
     }
 
@@ -114,21 +114,21 @@ public class MaximLatypov {
                 continue;
             }
 
-            Actor Harry1 = new Actor(Character.getNumericValue(input_2.charAt(1)), Character.getNumericValue(input_2.charAt(3)));
-            Actor Harry2 = new Actor(Harry1.getX(), Harry1.getY());
+            Actor Harry = new Actor(Character.getNumericValue(input_2.charAt(1)), Character.getNumericValue(input_2.charAt(3)));
+            Actor HarryCopy = new Actor(Harry.getX(), Harry.getY());
             Cell Filch = new Cell(Character.getNumericValue(input_2.charAt(7)), Character.getNumericValue(input_2.charAt(9)));
             Cell Cat = new Cell(Character.getNumericValue(input_2.charAt(13)), Character.getNumericValue(input_2.charAt(15)));
             Cell Book = new Cell(Character.getNumericValue(input_2.charAt(19)), Character.getNumericValue(input_2.charAt(21)));
             Cell Cloak = new Cell(Character.getNumericValue(input_2.charAt(25)), Character.getNumericValue(input_2.charAt(27)));
             Cell Exit = new Cell(Character.getNumericValue(input_2.charAt(31)), Character.getNumericValue(input_2.charAt(33)));
 
-            if (findLogicError(Harry1, Filch, Cat, Book, Cloak, Exit)){
+            if (findLogicError(Harry, Filch, Cat, Book, Cloak, Exit)){
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 continue;
             }
-            Actor.followBacktracking(Harry1, Filch, Cat, Book, Cloak, Exit, scenario_2);
+            Actor.followBacktracking(Harry, Filch, Cat, Book, Cloak, Exit, scenario_2);
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            Actor.followAStar(Harry2, Filch, Cat, Book, Cloak, Exit, scenario_2);
+            Actor.followAStar(HarryCopy, Filch, Cat, Book, Cloak, Exit, scenario_2);
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         }
     }
@@ -146,20 +146,20 @@ public class MaximLatypov {
             return;
         }
 
-        Actor Harry1 = new Actor(Character.getNumericValue(input.charAt(1)), Character.getNumericValue(input.charAt(3)));
-        Actor Harry2 = new Actor(Harry1.getX(), Harry1.getY());
+        Actor Harry = new Actor(Character.getNumericValue(input.charAt(1)), Character.getNumericValue(input.charAt(3)));
+        Actor HarryCopy = new Actor(Harry.getX(), Harry.getY());
         Cell Filch = new Cell(Character.getNumericValue(input.charAt(7)), Character.getNumericValue(input.charAt(9)));
         Cell Cat = new Cell(Character.getNumericValue(input.charAt(13)), Character.getNumericValue(input.charAt(15)));
         Cell Book = new Cell(Character.getNumericValue(input.charAt(19)), Character.getNumericValue(input.charAt(21)));
         Cell Cloak = new Cell(Character.getNumericValue(input.charAt(25)), Character.getNumericValue(input.charAt(27)));
         Cell Exit = new Cell(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
 
-        if (findLogicError(Harry1, Filch, Cat, Book, Cloak, Exit)){
+        if (findLogicError(Harry, Filch, Cat, Book, Cloak, Exit)){
             return;
         }
-        Actor.followBacktracking(Harry1,Filch,Cat,Book,Cloak,Exit,scenario);
+        Actor.followBacktracking(Harry,Filch,Cat,Book,Cloak,Exit,scenario);
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-        Actor.followAStar(Harry2,Filch,Cat,Book,Cloak,Exit, scenario);
+        Actor.followAStar(HarryCopy,Filch,Cat,Book,Cloak,Exit, scenario);
     }
 }
 
@@ -194,6 +194,7 @@ class Actor extends Cell{
 
     private boolean haveBook;
     private boolean haveCloak;
+    private int step;
     public static int[][] map = new int[9][9];
     public static Stack<Cell> stack = new Stack<>();
 
@@ -205,12 +206,20 @@ class Actor extends Cell{
         return haveCloak;
     }
 
+    public int getStep() {
+        return step;
+    }
+
     public void setHaveBook(boolean haveBook) {
         this.haveBook = haveBook;
     }
 
     public void setHaveCloak(boolean haveCloak) {
         this.haveCloak = haveCloak;
+    }
+
+    public void setStep(int step) {
+        this.step = step;
     }
 
     public Actor(int x, int y) {
@@ -220,11 +229,10 @@ class Actor extends Cell{
         for (int[] raw: map){
             Arrays.fill(raw, 0);
         }
+        step = 0;
     }
 
-    public static boolean isInLegalZone(int x, int y){
-        return x >= 0 && x < 9 && y < 9 && y >= 0;
-    }
+    public static boolean isInLegalZone(int x, int y){return x >= 0 && x < 9 && y < 9 && y >= 0;}
 
     public static void checkCloak(Actor Harry, Cell Cloak){
         if (Harry.getX() == Cloak.getX() && Harry.getY() == Cloak.getY()) {
@@ -379,11 +387,21 @@ class Actor extends Cell{
         return false;
     }
 
+    public static void printAlgorithmInfo(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
+        System.out.println("Scenario  : " + scenario);
+        System.out.println("Harry : [" + Harry.getX() + "," + Harry.getY() + "]");
+        System.out.println("Filch : [" + Filch.getX() + "," + Filch.getY() + "]");
+        System.out.println("Cat   : [" + Cat.getX() + "," + Cat.getY() + "]");
+        System.out.println("Book  : [" + Book.getX() + "," + Book.getY() + "]");
+        System.out.println("Cloak : [" + Cloak.getX() + "," + Cloak.getY() + "]");
+        System.out.println("Exit  : [" + Exit.getX() + "," + Exit.getY() + "]");
+        System.out.print("Path of the algorithm: ");
+    }
+
     public static ArrayList<Cell> backtracking(Actor Harry, ArrayList<Cell> visitedCells){
         ArrayList<Cell> path = new ArrayList<>();
-        Actor Current = Harry;
-        for (int i = Current.getX() - 1; i < Current.getX() + 2; ++i) {
-            for (int j = Current.getY() - 1; j < Current.getY() + 2; ++j) {
+        for (int i = Harry.getX() - 1; i < Harry.getX() + 2; ++i) {
+            for (int j = Harry.getY() - 1; j < Harry.getY() + 2; ++j) {
                 if (!isInLegalZone(i, j)) {
                     continue;
                 }
@@ -393,7 +411,7 @@ class Actor extends Cell{
                 if (isVisited(i, j, visitedCells)) {
                     continue;
                 }
-                stack.push(new Cell(Current.getX(), Current.getY()));
+                stack.push(new Cell(Harry.getX(), Harry.getY()));
                 path.add(new Cell(i, j));
                 return path;
             }
@@ -408,16 +426,8 @@ class Actor extends Cell{
     public static void followBacktracking(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
 
         System.out.println("Algorithm : Backtracking");
-        System.out.println("Scenario  : " + scenario);
-        System.out.println("Harry : [" + Harry.getX() + "," + Harry.getY() + "]");
-        System.out.println("Filch : [" + Filch.getX() + "," + Filch.getY() + "]");
-        System.out.println("Cat   : [" + Cat.getX() + "," + Cat.getY() + "]");
-        System.out.println("Book  : [" + Book.getX() + "," + Book.getY() + "]");
-        System.out.println("Cloak : [" + Cloak.getX() + "," + Cloak.getY() + "]");
-        System.out.println("Exit  : [" + Exit.getX() + "," + Exit.getY() + "]");
-        System.out.print("Path of the algorithm: ");
+        printAlgorithmInfo(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
 
-        int stepCounter = 0;
         boolean isExitReached = false;
         ArrayList<Cell> visitedCells = new ArrayList<>();
         visitedCells.add(new Cell(0,0));
@@ -429,16 +439,16 @@ class Actor extends Cell{
             currentPath = backtracking(Harry, visitedCells);
             if (currentPath == null){
                 System.out.println("\nOutcome: Lose (Impossible to reach exit)");
-                System.out.println("Number of steps: " + stepCounter);
+                System.out.println("Number of steps: " + Harry.getStep());
                 return;
             }
             Harry.setX(currentPath.get(0).getX());
             Harry.setY(currentPath.get(0).getY());
-            stepCounter++;
+            Harry.setStep(Harry.getStep() + 1);
             System.out.print("[" + Harry.getX() + "," + Harry.getY() + "]");
             if (isInCatZone(Harry.getX(), Harry.getY(), Harry, Cat) || isInFilchZone(Harry.getX(), Harry.getY(),Harry, Filch)){
                 System.out.println("\nOutcome: Lose (Harry has been caught by inspector)");
-                System.out.println("Number of steps: " + stepCounter);
+                System.out.println("Number of steps: " + Harry.getStep());
                 return;
             }
             if (Harry.getX() == Exit.getX() && Harry.getY() == Exit.getY()){
@@ -452,6 +462,7 @@ class Actor extends Cell{
                 for (Cell cell : currentPath){
                     Harry.setX(cell.getX());
                     Harry.setY(cell.getY());
+                    Harry.setStep(Harry.getStep() + 1);
                     visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
                     System.out.print("[" + Harry.getX() + "," + Harry.getY() + "]");
                 }
@@ -460,22 +471,13 @@ class Actor extends Cell{
             }
         }
         System.out.println("\nOutcome: Win");
-        System.out.println("Number of steps: " + stepCounter);
+        System.out.println("Number of steps: " + Harry.getStep());
     }
 
     public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario) {
 
         System.out.println("Algorithm : A*");
-        System.out.println("Scenario  : " + scenario);
-        System.out.println("Harry : [" + Harry.getX() + "," + Harry.getY() + "]");
-        System.out.println("Filch : [" + Filch.getX() + "," + Filch.getY() + "]");
-        System.out.println("Cat   : [" + Cat.getX() + "," + Cat.getY() + "]");
-        System.out.println("Book  : [" + Book.getX() + "," + Book.getY() + "]");
-        System.out.println("Cloak : [" + Cloak.getX() + "," + Cloak.getY() + "]");
-        System.out.println("Exit  : [" + Exit.getX() + "," + Exit.getY() + "]");
-        System.out.print("Path of the algorithm: ");
-
-        int stepCounter = 0;
+        printAlgorithmInfo(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
         boolean isExitReached = false;
         ArrayList<Cell> currentPath = aStar(Harry, Exit);
         ArrayList<Cell> visitedCells = new ArrayList<>();
@@ -517,7 +519,7 @@ class Actor extends Cell{
                 }
                 if (shortestPath == null) {
                     System.out.println("\nOutcome: Lose (Impossible to reach exit)");
-                    System.out.println("Number of steps: " + stepCounter);
+                    System.out.println("Number of steps: " + Harry.getStep());
                 }
                 currentPath = shortestPath;
             }
@@ -528,10 +530,10 @@ class Actor extends Cell{
             Harry.setY(currentPath.get(0).getY());
             if (isInCatZone(Harry.getX(), Harry.getY(),Harry, Cat) || isInFilchZone(Harry.getX(), Harry.getY(),Harry, Filch)){
                 System.out.println("\nOutcome: Lose (Harry has been caught by inspector)");
-                System.out.println("Number of steps: " + stepCounter);
+                System.out.println("Number of steps: " + Harry.getStep());
                 return;
             }
-            stepCounter++;
+            Harry.setStep(Harry.getStep() + 1);
             if (Harry.getX() == Exit.getX() && Harry.getY() == Exit.getY()){
                 isExitReached = true;
             }
@@ -548,6 +550,6 @@ class Actor extends Cell{
             senseFilchZone(Harry, Filch, scenario);
         }
         System.out.println("\nOutcome: Win");
-        System.out.println("Number of steps: " + stepCounter);
+        System.out.println("Number of steps: " + Harry.getStep());
     }
 }
