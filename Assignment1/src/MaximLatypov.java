@@ -31,11 +31,11 @@ public class MaximLatypov {
 //        System.out.println("Please enter scenario:");
 //        int scenario_1 = in.nextInt();
 
-        String input_2 = generateInput();
-        int scenario_2 = generateScenario();
-
-        findScenarioError(scenario_1);
-        findInputValueError(input_1);
+//        String input_2 = generateInput();
+//        int scenario_2 = generateScenario();
+//
+//        findScenarioError(String.valueOf(scenario_2));
+//        findInputValueError(input_2);
 
         Actor Harry = new Actor(Character.getNumericValue(input_1.charAt(1)), Character.getNumericValue(input_1.charAt(3)));
         Cell Filch = new Cell(Character.getNumericValue(input_1.charAt(7)), Character.getNumericValue(input_1.charAt(9)));
@@ -45,12 +45,10 @@ public class MaximLatypov {
         Cell Exit = new Cell(Character.getNumericValue(input_1.charAt(31)), Character.getNumericValue(input_1.charAt(33)));
 
         findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
-//        Actor.followBacktracking(Harry,Filch,Cat,Book,Cloak,Exit,Integer.parseInt(scenario_1));
-        Actor.followAStar(Harry,Filch,Cat,Book,Cloak,Exit, Integer.parseInt(scenario_1));
+        Actor.followBacktracking(Harry,Filch,Cat,Book,Cloak,Exit,Integer.parseInt(scenario_1));
+//        Actor.followAStar(Harry,Filch,Cat,Book,Cloak,Exit, scenario_2);
         System.out.println("-> This is the place where output ends");
     }
-
-
 
     public static int generateScenario(){return (int)(1 + Math.random()*2);}
 
@@ -385,6 +383,16 @@ class Actor extends Cell{
 
     public static void followBacktracking(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
 
+        System.out.println("Algorithm : Backtracking");
+        System.out.println("Harry : [" + Harry.getX() + "," + Harry.getY() + "] ");
+        System.out.println("Filch : [" + Filch.getX() + "," + Filch.getY() + "] ");
+        System.out.println("Cat   : [" + Cat.getX() + "," + Cat.getY() + "] ");
+        System.out.println("Book  : [" + Book.getX() + "," + Book.getY() + "] ");
+        System.out.println("Cloak : [" + Cloak.getX() + "," + Cloak.getY() + "] ");
+        System.out.println("Exit  : [" + Exit.getX() + "," + Exit.getY() + "] ");
+        System.out.print("Path of the algorithm: ");
+
+        int stepCounter = 0;
         boolean isExitReached = false;
         ArrayList<Cell> visitedCells = new ArrayList<>();
         visitedCells.add(new Cell(0,0));
@@ -394,11 +402,18 @@ class Actor extends Cell{
             senseCatZone(Harry, Cat, scenario);
             senseFilchZone(Harry, Filch, scenario);
             currentPath = backtracking(Harry, visitedCells);
+            if (currentPath == null){
+                System.out.println("\nOutcome: Lose (Impossible to reach exit)");
+                System.out.println("Number of steps: " + stepCounter);
+                return;
+            }
             Harry.setX(currentPath.get(0).getX());
             Harry.setY(currentPath.get(0).getY());
-            System.out.println("[" + Harry.getX() + "," + Harry.getY() + "]");
+            stepCounter++;
+            System.out.print("[" + Harry.getX() + "," + Harry.getY() + "]");
             if (isInCatZone(Harry.getX(), Harry.getY(), Harry, Cat) || isInFilchZone(Harry.getX(), Harry.getY(),Harry, Filch)){
-                System.out.println("Harry has been caught by inspector!!!");
+                System.out.print("\nOutcome: Lose (Harry has been caught by inspector)");
+                System.out.println("Number of steps: " + stepCounter);
                 return;
             }
             if (Harry.getX() == Exit.getX() && Harry.getY() == Exit.getY()){
@@ -413,21 +428,26 @@ class Actor extends Cell{
                     Harry.setX(cell.getX());
                     Harry.setY(cell.getY());
                     visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
-                    System.out.println("[" + Harry.getX() + "," + Harry.getY() + "]");
+                    System.out.print("[" + Harry.getX() + "," + Harry.getY() + "] ");
                 }
-//               while (stack.peek().getX() != Exit.getX() || stack.peek().getY() != Exit.getY()){
-//                   Cell temp = stack.pop();
-//                   Harry.setX(temp.getX());
-//                   Harry.setY(temp.getY());
-//                   visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
-//               }
             } else {
                 visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
             }
         }
+        System.out.println("\nOutcome: Win");
+        System.out.println("Number of steps: " + stepCounter);
     }
 
     public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario) {
+
+        System.out.println("Algorithm : A*");
+        System.out.println("Harry : [" + Harry.getX() + "," + Harry.getY() + "] ");
+        System.out.println("Filch : [" + Filch.getX() + "," + Filch.getY() + "] ");
+        System.out.println("Cat   : [" + Cat.getX() + "," + Cat.getY() + "] ");
+        System.out.println("Book  : [" + Book.getX() + "," + Book.getY() + "] ");
+        System.out.println("Cloak : [" + Cloak.getX() + "," + Cloak.getY() + "] ");
+        System.out.println("Exit  : [" + Exit.getX() + "," + Exit.getY() + "] ");
+        System.out.print("Path of the algorithm: ");
 
         int stepCounter = 0;
         boolean isExitReached = false;
@@ -470,7 +490,8 @@ class Actor extends Cell{
                     }
                 }
                 if (shortestPath == null) {
-                    System.out.println("Impossible to reach exit");
+                    System.out.println("\nOutcome: Lose (Impossible to reach exit)");
+                    System.out.println("Number of steps: " + stepCounter);
                 }
                 currentPath = shortestPath;
             }
@@ -480,7 +501,8 @@ class Actor extends Cell{
             Harry.setX(currentPath.get(0).getX());
             Harry.setY(currentPath.get(0).getY());
             if (isInCatZone(Harry.getX(), Harry.getY(),Harry, Cat) || isInFilchZone(Harry.getX(), Harry.getY(),Harry, Filch)){
-                System.out.println("Harry has been caught by inspector!!!");
+                System.out.println("\nOutcome: Lose (Harry has been caught by inspector)");
+                System.out.println("Number of steps: " + stepCounter);
                 return;
             }
             stepCounter++;
@@ -489,7 +511,7 @@ class Actor extends Cell{
             }
             currentPath.remove(0);
             visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
-            System.out.println("[" + Harry.getX() + "," + Harry.getY() + "]");
+            System.out.print("[" + Harry.getX() + "," + Harry.getY() + "] ");
             checkBook(Harry, Book);
             if (Harry.haveBook){
                 isExitReached = false;
@@ -499,6 +521,7 @@ class Actor extends Cell{
             senseCatZone(Harry, Cat, scenario);
             senseFilchZone(Harry, Filch, scenario);
         }
-        System.out.println(stepCounter);
+        System.out.println("\nOutcome: Win");
+        System.out.println("Number of steps: " + stepCounter);
     }
 }
