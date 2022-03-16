@@ -1,52 +1,10 @@
-import java.io.*;
 import java.util.*;
 
 public class MaximLatypov {
 
     public static void main(String[] args) {
-
-        String input_1 = "";
-        String scenario_1 = "";
-
-        try{
-            FileReader fileReader = new FileReader("C:\\Users\\Max\\OneDrive\\Документы\\GitHub\\IntroToAI\\Assignment1\\src\\input.txt");
-            BufferedReader reader = new BufferedReader(fileReader);
-            input_1 = reader.readLine();
-            scenario_1 = reader.readLine();
-
-            String illegalLine = reader.readLine();
-            if (illegalLine != null) {
-                System.out.println("Error occurred, invalid input: illegal number of input strings");
-                System.exit(0);
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-//        Scanner in = new Scanner(System.in);
-//        System.out.println("Please enter first string of input:");
-//        String input_1 = in.nextLine();
-//        System.out.println("Please enter scenario:");
-//        int scenario_1 = in.nextInt();
-
-//        String input_2 = generateInput();
-//        int scenario_2 = generateScenario();
-//
-//        findScenarioError(String.valueOf(scenario_2));
-//        findInputValueError(input_2);
-
-        Actor Harry = new Actor(Character.getNumericValue(input_1.charAt(1)), Character.getNumericValue(input_1.charAt(3)));
-        Cell Filch = new Cell(Character.getNumericValue(input_1.charAt(7)), Character.getNumericValue(input_1.charAt(9)));
-        Cell Cat = new Cell(Character.getNumericValue(input_1.charAt(13)), Character.getNumericValue(input_1.charAt(15)));
-        Cell Book = new Cell(Character.getNumericValue(input_1.charAt(19)), Character.getNumericValue(input_1.charAt(21)));
-        Cell Cloak = new Cell(Character.getNumericValue(input_1.charAt(25)), Character.getNumericValue(input_1.charAt(27)));
-        Cell Exit = new Cell(Character.getNumericValue(input_1.charAt(31)), Character.getNumericValue(input_1.charAt(33)));
-
-        findLogicError(Harry, Filch, Cat, Book, Cloak, Exit);
-        Actor.followBacktracking(Harry,Filch,Cat,Book,Cloak,Exit,Integer.parseInt(scenario_1));
-//        Actor.followAStar(Harry,Filch,Cat,Book,Cloak,Exit, scenario_2);
+//        readFromConsole();
+        generateTest(50);
         System.out.println("-> This is the place where output ends");
     }
 
@@ -62,80 +20,146 @@ public class MaximLatypov {
         return (input.length() == 0) ? null : (input.substring(0, input.length() - 1));
     }
 
-    public static void findScenarioError(String scenario){
+    public static boolean findScenarioError(String scenario){
         if(Integer.parseInt(scenario) != 1 && Integer.parseInt(scenario) != 2){
             System.out.println("Error occurred, invalid input: input scenario out of legal range");
-            System.exit(0);
+            return true;
         }
+        return false;
     }
 
-    public static void findInputValueError(String input) {
+    public static boolean findInputValueError(String input) {
 
         for (int i = 0; i < input.length(); ++i){
             if (((input.charAt(i) > 56) || (input.charAt(i) < 48))
                     && ((input.charAt(i) != '[') && (input.charAt(i) != ']') && (input.charAt(i) != ',') && (input.charAt(i) != ' '))){
                 System.out.println("Error occurred, invalid input: input value out of legal range");
-                System.exit(0);
+                return true;
             }
+            return false;
         }
 
         for (int i = 1, j = 3; i < 32; i = i + 6, j = i + 2){
             if ((input.charAt(i) < '0') || (input.charAt(i) > '8')) {
                 System.out.println("Error occurred, invalid input: input value is illegal");
-                System.exit(0);
+                return true;
             }
             if ((input.charAt(j) < '0') || (input.charAt(j) > '8')) {
                 System.out.println("Error occurred, invalid input: input value is illegal");
-                System.exit(0);
+                return true;
             }
         }
 
         if (input.length() != 35){
             System.out.println("Error occurred, invalid input: illegal number of input values");
-            System.exit(0);
+            return true;
         }
+        return false;
     }
 
-    public static void findLogicError(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit){
+    public static boolean findLogicError(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit){
 
         if (Math.sqrt(Math.pow(Harry.getX() - Filch.getX(), 2) + Math.pow(Harry.getY() - Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Harry is already in inspector's zone");
-            System.exit(0);
+            return true;
         }
         if (Math.sqrt(Math.pow(Book.getX() - Filch.getX(), 2) + Math.pow(Book.getY() - Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Book is in inspector's zone");
-            System.exit(0);
+            return true;
         }
         if (Math.sqrt(Math.pow(Cloak.getX() - Filch.getX(), 2) + Math.pow(Cloak.getY() - Filch.getY(), 2)) < 3){
             System.out.println("Error occurred, invalid input: Cloak is in inspector's zone");
-            System.exit(0);
+            return true;
         }
         if (Exit.getX() == Filch.getX() && Exit.getY() == Filch.getY()){
             System.out.println("Error occurred, invalid input: Exit is in inspector's cell");
-            System.exit(0);
+            return true;
         }
 
         if (Math.sqrt(Math.pow(Harry.getX() - Cat.getX(), 2) + Math.pow(Harry.getY() - Cat.getY(), 2)) < 2){
             System.out.println("Error occurred, invalid input: Harry is already in inspector's zone");
-            System.exit(0);
+            return true;
         }
         if (Math.sqrt(Math.pow(Book.getX() - Cat.getX(), 2) + Math.pow(Book.getY() - Cat.getY(), 2)) < 2){
             System.out.println("Error occurred, invalid input: Book is in inspector's zone");
-            System.exit(0);
+            return true;
         }
         if (Math.sqrt(Math.pow(Cloak.getX() - Cat.getX(), 2) + Math.pow(Cloak.getY() - Cat.getY(), 2)) < 2){
             System.out.println("Error occurred, invalid input: Cloak is in inspector's zone");
-            System.exit(0);
+            return true;
         }
         if (Exit.getX() == Cat.getX() && Exit.getY() == Cat.getY()){
             System.out.println("Error occurred, invalid input: Exit is in inspector's cell");
-            System.exit(0);
+            return true;
         }
 
         if ((Exit.getX() == Book.getX()) && (Exit.getY() == Book.getY())){
             System.out.println("Error occurred, invalid input: Exit and Book can not be on the same cell");
-            System.exit(0);
+            return true;
         }
+        return false;
+    }
+
+    public static void generateTest(int testsNumber){
+        for (int i = 0; i < testsNumber; ++i){
+            String input_2 = generateInput();
+            int scenario_2 = generateScenario();
+
+            if (findScenarioError(String.valueOf(scenario_2))){
+                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                continue;
+            }
+            if (findInputValueError(input_2)){
+                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                continue;
+            }
+
+            Actor Harry1 = new Actor(Character.getNumericValue(input_2.charAt(1)), Character.getNumericValue(input_2.charAt(3)));
+            Actor Harry2 = new Actor(Harry1.getX(), Harry1.getY());
+            Cell Filch = new Cell(Character.getNumericValue(input_2.charAt(7)), Character.getNumericValue(input_2.charAt(9)));
+            Cell Cat = new Cell(Character.getNumericValue(input_2.charAt(13)), Character.getNumericValue(input_2.charAt(15)));
+            Cell Book = new Cell(Character.getNumericValue(input_2.charAt(19)), Character.getNumericValue(input_2.charAt(21)));
+            Cell Cloak = new Cell(Character.getNumericValue(input_2.charAt(25)), Character.getNumericValue(input_2.charAt(27)));
+            Cell Exit = new Cell(Character.getNumericValue(input_2.charAt(31)), Character.getNumericValue(input_2.charAt(33)));
+
+            if (findLogicError(Harry1, Filch, Cat, Book, Cloak, Exit)){
+                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                continue;
+            }
+            Actor.followBacktracking(Harry1, Filch, Cat, Book, Cloak, Exit, scenario_2);
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+            Actor.followAStar(Harry2, Filch, Cat, Book, Cloak, Exit, scenario_2);
+            System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        }
+    }
+
+    public static void readFromConsole(){
+        Scanner in = new Scanner(System.in);
+        System.out.println("Please enter input:");
+        String input = in.nextLine();
+        int scenario = in.nextInt();
+
+        if (findScenarioError(String.valueOf(scenario))){
+            return;
+        }
+        if (findInputValueError(input)){
+            return;
+        }
+
+        Actor Harry1 = new Actor(Character.getNumericValue(input.charAt(1)), Character.getNumericValue(input.charAt(3)));
+        Actor Harry2 = new Actor(Harry1.getX(), Harry1.getY());
+        Cell Filch = new Cell(Character.getNumericValue(input.charAt(7)), Character.getNumericValue(input.charAt(9)));
+        Cell Cat = new Cell(Character.getNumericValue(input.charAt(13)), Character.getNumericValue(input.charAt(15)));
+        Cell Book = new Cell(Character.getNumericValue(input.charAt(19)), Character.getNumericValue(input.charAt(21)));
+        Cell Cloak = new Cell(Character.getNumericValue(input.charAt(25)), Character.getNumericValue(input.charAt(27)));
+        Cell Exit = new Cell(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
+
+        if (findLogicError(Harry1, Filch, Cat, Book, Cloak, Exit)){
+            return;
+        }
+        Actor.followBacktracking(Harry1,Filch,Cat,Book,Cloak,Exit,scenario);
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+        Actor.followAStar(Harry2,Filch,Cat,Book,Cloak,Exit, scenario);
     }
 }
 
@@ -384,12 +408,13 @@ class Actor extends Cell{
     public static void followBacktracking(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
 
         System.out.println("Algorithm : Backtracking");
-        System.out.println("Harry : [" + Harry.getX() + "," + Harry.getY() + "] ");
-        System.out.println("Filch : [" + Filch.getX() + "," + Filch.getY() + "] ");
-        System.out.println("Cat   : [" + Cat.getX() + "," + Cat.getY() + "] ");
-        System.out.println("Book  : [" + Book.getX() + "," + Book.getY() + "] ");
-        System.out.println("Cloak : [" + Cloak.getX() + "," + Cloak.getY() + "] ");
-        System.out.println("Exit  : [" + Exit.getX() + "," + Exit.getY() + "] ");
+        System.out.println("Scenario  : " + scenario);
+        System.out.println("Harry : [" + Harry.getX() + "," + Harry.getY() + "]");
+        System.out.println("Filch : [" + Filch.getX() + "," + Filch.getY() + "]");
+        System.out.println("Cat   : [" + Cat.getX() + "," + Cat.getY() + "]");
+        System.out.println("Book  : [" + Book.getX() + "," + Book.getY() + "]");
+        System.out.println("Cloak : [" + Cloak.getX() + "," + Cloak.getY() + "]");
+        System.out.println("Exit  : [" + Exit.getX() + "," + Exit.getY() + "]");
         System.out.print("Path of the algorithm: ");
 
         int stepCounter = 0;
@@ -412,7 +437,7 @@ class Actor extends Cell{
             stepCounter++;
             System.out.print("[" + Harry.getX() + "," + Harry.getY() + "]");
             if (isInCatZone(Harry.getX(), Harry.getY(), Harry, Cat) || isInFilchZone(Harry.getX(), Harry.getY(),Harry, Filch)){
-                System.out.print("\nOutcome: Lose (Harry has been caught by inspector)");
+                System.out.println("\nOutcome: Lose (Harry has been caught by inspector)");
                 System.out.println("Number of steps: " + stepCounter);
                 return;
             }
@@ -428,7 +453,7 @@ class Actor extends Cell{
                     Harry.setX(cell.getX());
                     Harry.setY(cell.getY());
                     visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
-                    System.out.print("[" + Harry.getX() + "," + Harry.getY() + "] ");
+                    System.out.print("[" + Harry.getX() + "," + Harry.getY() + "]");
                 }
             } else {
                 visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
@@ -441,12 +466,13 @@ class Actor extends Cell{
     public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario) {
 
         System.out.println("Algorithm : A*");
-        System.out.println("Harry : [" + Harry.getX() + "," + Harry.getY() + "] ");
-        System.out.println("Filch : [" + Filch.getX() + "," + Filch.getY() + "] ");
-        System.out.println("Cat   : [" + Cat.getX() + "," + Cat.getY() + "] ");
-        System.out.println("Book  : [" + Book.getX() + "," + Book.getY() + "] ");
-        System.out.println("Cloak : [" + Cloak.getX() + "," + Cloak.getY() + "] ");
-        System.out.println("Exit  : [" + Exit.getX() + "," + Exit.getY() + "] ");
+        System.out.println("Scenario  : " + scenario);
+        System.out.println("Harry : [" + Harry.getX() + "," + Harry.getY() + "]");
+        System.out.println("Filch : [" + Filch.getX() + "," + Filch.getY() + "]");
+        System.out.println("Cat   : [" + Cat.getX() + "," + Cat.getY() + "]");
+        System.out.println("Book  : [" + Book.getX() + "," + Book.getY() + "]");
+        System.out.println("Cloak : [" + Cloak.getX() + "," + Cloak.getY() + "]");
+        System.out.println("Exit  : [" + Exit.getX() + "," + Exit.getY() + "]");
         System.out.print("Path of the algorithm: ");
 
         int stepCounter = 0;
@@ -511,7 +537,7 @@ class Actor extends Cell{
             }
             currentPath.remove(0);
             visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
-            System.out.print("[" + Harry.getX() + "," + Harry.getY() + "] ");
+            System.out.print("[" + Harry.getX() + "," + Harry.getY() + "]");
             checkBook(Harry, Book);
             if (Harry.haveBook){
                 isExitReached = false;
