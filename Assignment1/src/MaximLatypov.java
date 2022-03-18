@@ -3,9 +3,9 @@ import java.util.*;
 public class MaximLatypov {
 
     public static void main(String[] args) {
-        Statistic statistic = new Statistic(0,0,0,0,0,0,0,0,0,0);
+        Statistic statistic = new Statistic(0,0,0,0,0,0,0,0,0);
 //        readFromConsole();
-        generateTest(statistic, 1000);
+        generateTest(statistic, 1000000);
         statistic.printStatistic();
     }
 
@@ -14,8 +14,9 @@ public class MaximLatypov {
      *
      * @return int random value between 1 and 2
      */
-    public static int generateScenario(){return (int)(1 + Math.random()*2);}
-
+    public static int generateScenario(){
+        return (int)(1 + Math.random()*2);
+    }
 
     /**
      * This function generates string with random coordinates of necessary objects
@@ -30,7 +31,19 @@ public class MaximLatypov {
         for (int i = 0; i < 5; ++i){
             input.append("[").append(new Random().nextInt(8)).append(",").append(new Random().nextInt(8)).append("] ");
         }
-        return (input.length() == 0) ? null : (input.substring(0, input.length() - 1));
+        String map = (input.length() == 0) ? null : (input.substring(0, input.length() - 1));
+
+        Actor Harry = new Actor(Character.getNumericValue(map.charAt(1)), Character.getNumericValue(map.charAt(3)));
+        Cell Filch = new Cell(Character.getNumericValue(map.charAt(7)), Character.getNumericValue(map.charAt(9)));
+        Cell Cat = new Cell(Character.getNumericValue(map.charAt(13)), Character.getNumericValue(map.charAt(15)));
+        Cell Book = new Cell(Character.getNumericValue(map.charAt(19)), Character.getNumericValue(map.charAt(21)));
+        Cell Cloak = new Cell(Character.getNumericValue(map.charAt(25)), Character.getNumericValue(map.charAt(27)));
+        Cell Exit = new Cell(Character.getNumericValue(map.charAt(31)), Character.getNumericValue(map.charAt(33)));
+
+        if (findLogicError(Harry, Filch, Cat, Book, Cloak, Exit)){
+            generateInput();
+        }
+        return map;
     }
 
     /**
@@ -141,17 +154,6 @@ public class MaximLatypov {
             String input = generateInput();
             int scenario = generateScenario();
 
-            if (findScenarioError(String.valueOf(scenario))){
-                statistic.setFailedTestsNumber(statistic.getFailedTestsNumber() + 1);
-                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                continue;
-            }
-            if (findInputValueError(input)){
-                statistic.setFailedTestsNumber(statistic.getFailedTestsNumber() + 1);
-                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                continue;
-            }
-
             Actor Harry = new Actor(Character.getNumericValue(input.charAt(1)), Character.getNumericValue(input.charAt(3)));
             Actor HarryCopy = new Actor(Harry.getX(), Harry.getY());
             Cell Filch = new Cell(Character.getNumericValue(input.charAt(7)), Character.getNumericValue(input.charAt(9)));
@@ -159,13 +161,6 @@ public class MaximLatypov {
             Cell Book = new Cell(Character.getNumericValue(input.charAt(19)), Character.getNumericValue(input.charAt(21)));
             Cell Cloak = new Cell(Character.getNumericValue(input.charAt(25)), Character.getNumericValue(input.charAt(27)));
             Cell Exit = new Cell(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
-
-            if (findLogicError(Harry, Filch, Cat, Book, Cloak, Exit)){
-                statistic.setFailedTestsNumber(statistic.getFailedTestsNumber() + 1);
-                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-                continue;
-            }
-            statistic.setPassedTestsNumber(statistic.getPassedTestsNumber() + 1);
 
             Actor.followBacktracking(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
             if (Objects.equals(Harry.getOutcome(), "Win")){
@@ -187,8 +182,9 @@ public class MaximLatypov {
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         }
 
-        statistic.setProbWinBacktrack((double) statistic.getWinOutcomeNumBacktrack() / statistic.getPassedTestsNumber());
-        statistic.setProbWinAStar((double) statistic.getWinOutcomeNumAStar() / statistic.getPassedTestsNumber());
+        statistic.setTestsNumber(testsNumber);
+        statistic.setProbWinBacktrack((double) statistic.getWinOutcomeNumBacktrack() / statistic.getTestsNumber());
+        statistic.setProbWinAStar((double) statistic.getWinOutcomeNumAStar() / statistic.getTestsNumber());
 
         statistic.setAvStepNumBacktrack(statistic.getAvStepNumBacktrack() / statistic.getWinOutcomeNumBacktrack());
         statistic.setAvTimeBacktrack(statistic.getAvTimeBacktrack() / statistic.getWinOutcomeNumBacktrack());
@@ -751,10 +747,9 @@ class Actor extends Cell{
 class Statistic{
 
     /**
-     *  These 2 entities are for counting how many tests passed and failed
+     *  This entity is for counting how many tests user decided to create
      */
-    private int passedTestsNumber;
-    private int failedTestsNumber;
+    private int testsNumber;
 
     /**
      *  These 2 entities are for counting the probability that Actor will win the game
@@ -783,11 +778,10 @@ class Statistic{
      *  initializing its statistic entities
      */
 
-    public Statistic(int passedTestsNumber,int failedTestsNumber, double probWinAStar, double probWinBacktrack,
+    public Statistic(int testsNumber, double probWinAStar, double probWinBacktrack,
                      int winOutcomeNumAStar, int winOutcomeNumBacktrack, double avStepNumAStar, double avStepNumBacktrack,
                      long avTimeAStar, long avTimeBacktrack){
-        this.passedTestsNumber = passedTestsNumber;
-        this.failedTestsNumber= failedTestsNumber;
+        this.testsNumber = testsNumber;
         this.probWinAStar = probWinAStar;
         this.probWinBacktrack = probWinBacktrack;
         this.winOutcomeNumAStar = winOutcomeNumAStar;
@@ -803,9 +797,7 @@ class Statistic{
      *  It is needed to have access to it
      */
 
-    public int getPassedTestsNumber() {return passedTestsNumber;}
-
-    public int getFailedTestsNumber() {return failedTestsNumber;}
+    public int getTestsNumber() {return testsNumber;}
 
     public double getProbWinAStar() {return probWinAStar;}
 
@@ -823,9 +815,7 @@ class Statistic{
 
     public long getAvTimeBacktrack() {return avTimeBacktrack;}
 
-    public void setPassedTestsNumber(int passedTestsNumber) {this.passedTestsNumber = passedTestsNumber;}
-
-    public void setFailedTestsNumber(int failedTestsNumber) {this.failedTestsNumber = failedTestsNumber;}
+    public void setTestsNumber(int testsNumber) {this.testsNumber = testsNumber;}
 
     public void setProbWinAStar(double probWinAStar) {this.probWinAStar = probWinAStar;}
 
@@ -848,15 +838,14 @@ class Statistic{
      *  This is the function which print main statistics information
      */
     public void printStatistic(){
-        if (getPassedTestsNumber() == 0 && getFailedTestsNumber() == 0 && getProbWinBacktrack() == 0 &&
+        if (getTestsNumber() == 0 && getProbWinBacktrack() == 0 &&
                 getProbWinAStar() == 0 && getWinOutcomeNumBacktrack() == 0 && getWinOutcomeNumAStar() == 0 && getAvStepNumBacktrack() == 0 &&
                 getAvStepNumAStar() == 0 && getAvTimeBacktrack() == 0 && getAvTimeAStar() == 0){
             System.out.println("Statistical analysis only for big amount of tests.\nPlease use generateTests() function to know more about statistics.");
             return;
         }
         System.out.println("\nStatistical Analysis:");
-        System.out.println(getPassedTestsNumber() + " tests have been passed");
-        System.out.println(getFailedTestsNumber() + " tests have been failed");
+        System.out.println("Number of tests: " +  + getTestsNumber());
         System.out.printf("Probability of winning test using Backtracking method: %.3f %n", getProbWinBacktrack());
         System.out.printf("Probability of winning test using A* method: %.3f %n", getProbWinAStar());
         System.out.println("There was " + getWinOutcomeNumBacktrack() + " winning outcomes when Backtracking method was used");
