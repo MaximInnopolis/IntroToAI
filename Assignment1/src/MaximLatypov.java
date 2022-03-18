@@ -10,8 +10,20 @@ public class MaximLatypov {
         statistic.printStatistic();
     }
 
+    /**
+     * This function generates random integer value between 1 and
+     *
+     * @return int random value between 1 and 2
+     */
     public static int generateScenario(){return (int)(1 + Math.random()*2);}
 
+
+    /**
+     * This function generates string with random coordinates of necessary objects
+     * between 0 and 8 which can be used in the future
+     *
+     * @return String which is actually map
+     */
     public static String generateInput(){
         StringBuilder input = new StringBuilder();
 
@@ -22,6 +34,12 @@ public class MaximLatypov {
         return (input.length() == 0) ? null : (input.substring(0, input.length() - 1));
     }
 
+    /**
+     * This function will give a true if scenario is out of legal range,
+     *  otherwise it will give false
+     *
+     * @return boolean value true if it meets input error
+     */
     public static boolean findScenarioError(String scenario){
         if(Integer.parseInt(scenario) != 1 && Integer.parseInt(scenario) != 2){
             System.out.println("Error occurred, invalid input: input scenario out of legal range");
@@ -30,6 +48,12 @@ public class MaximLatypov {
         return false;
     }
 
+    /**
+     * This function will give a true if input chars are incorrect,
+     * otherwise it will give false
+     *
+     * @return boolean value true if it meets input error
+     */
     public static boolean findInputValueError(String input) {
 
         for (int i = 0; i < input.length(); ++i){
@@ -59,6 +83,12 @@ public class MaximLatypov {
         return false;
     }
 
+    /**
+     * This function will give a true if it finds out that some objects are on the wrong positions,
+     * otherwise it will give false
+     *
+     * @return boolean value if it meets logic error
+     */
     public static boolean findLogicError(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit){
 
         if (Math.sqrt(Math.pow(Harry.getX() - Filch.getX(), 2) + Math.pow(Harry.getY() - Filch.getY(), 2)) < 3){
@@ -102,6 +132,11 @@ public class MaximLatypov {
         return false;
     }
 
+
+    /**
+     * This function generates tests which number can be chosen by user
+     * with multiple locations of objects
+     */
     public static void generateTest(Statistic statistic, int testsNumber){
         for (int i = 0; i < testsNumber; ++i){
             String input = generateInput();
@@ -163,6 +198,10 @@ public class MaximLatypov {
         statistic.setAvTimeAStar(statistic.getAvTimeAStar() / statistic.getWinOutcomeNumAStar());
     }
 
+
+    /**
+     * This function allow user manually add from console input and compare algorithms on his/her own
+     */
     public static void readFromConsole(){
         Scanner in = new Scanner(System.in);
         System.out.println("Please enter input:");
