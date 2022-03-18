@@ -3,10 +3,9 @@ import java.util.*;
 public class MaximLatypov {
 
     public static void main(String[] args) {
-        Statistic statistic = new Statistic();
+        Statistic statistic = new Statistic(0,0,0,0,0,0,0,0,0,0);
 //        readFromConsole();
-        generateTest(statistic, 10000);
-        System.out.println("-> This is the place where output ends");
+        generateTest(statistic, 1000);
         statistic.printStatistic();
     }
 
@@ -233,86 +232,94 @@ public class MaximLatypov {
     }
 }
 
+/**
+ * This is class which can be all static (not moving) creatures
+ */
 class Cell{
 
+    /**
+     * These are 2 entities (location) of Cell class
+     */
     private int x;
     private int y;
 
+    /**
+     *  This is the constructor of class Cell which helps to create objects initializing its coordinates
+     */
     public Cell(int x, int y){
         this.x = x;
         this.y = y;
     }
 
-    public int getX() {
-        return x;
-    }
+    /**
+     *  These are simply setters and getters for location
+     *  It is needed to have access to it
+     */
 
-    public int getY() {
-        return y;
-    }
+    public int getX() {return x;}
 
-    public void setX(int x) {
-        this.x = x;
-    }
+    public int getY() {return y;}
 
-    public void setY(int y) {
-        this.y = y;
-    }
+    public void setX(int x) {this.x = x;}
+
+    public void setY(int y) {this.y = y;}
 }
 
+/**
+ *  This is derived class which is an Actor of the game
+ *  It has ability to traverse through allowed cells
+ */
 class Actor extends Cell{
-
+    /**
+    * These 2 entities allow Actor make right decision
+    * on the field and understand when inspector see him
+     * and when they miss from their sight
+    */
     private boolean haveBook;
     private boolean haveCloak;
 
+    /**
+     * These 2 entities allow Actor count the time taken to find the book and reach the exit,
+     * count the number of step needed for this and determine whether it is possible or not
+     */
     private int step;
     private long timeTaken;
-
     private String outcome;
+
+    /**
+     * These 2 entities allow Actor mark on his/her map dangerous zone with inspectors
+     * in order to bypass them. Stack is needed for following backtracking method
+     */
     public static int[][] map = new int[9][9];
     public static Stack<Cell> stack = new Stack<>();
 
-    public boolean isHaveBook() {
-        return haveBook;
-    }
+    /**
+     *  These are simply setters and getters for location
+     *  It is needed to have access to it
+     */
+    public boolean isHaveBook() {return haveBook;}
 
-    public boolean isHaveCloak() {
-        return haveCloak;
-    }
+    public boolean isHaveCloak() {return haveCloak;}
 
+    public int getStep() {return step;}
 
-    public int getStep() {
-        return step;
-    }
+    public long getTimeTaken() {return timeTaken;}
 
-    public long getTimeTaken() {
-        return timeTaken;
-    }
+    public String getOutcome() {return outcome;}
 
-    public String getOutcome() {
-        return outcome;
-    }
+    public void setHaveBook(boolean haveBook) {this.haveBook = haveBook;}
 
-    public void setHaveBook(boolean haveBook) {
-        this.haveBook = haveBook;
-    }
+    public void setHaveCloak(boolean haveCloak) {this.haveCloak = haveCloak;}
 
-    public void setHaveCloak(boolean haveCloak) {
-        this.haveCloak = haveCloak;
-    }
+    public void setStep(int step) {this.step = step;}
 
-    public void setStep(int step) {
-        this.step = step;
-    }
+    public void setTimeTaken(long timeTaken) {this.timeTaken = timeTaken;}
 
-    public void setTimeTaken(long timeTaken) {
-        this.timeTaken = timeTaken;
-    }
+    public void setOutcome(String outcome) {this.outcome = outcome;}
 
-    public void setOutcome(String outcome) {
-        this.outcome = outcome;
-    }
-
+    /**
+     *  This is the constructor of class Actor which helps to create objects initializing its entities by 0
+     */
     public Actor(int x, int y) {
         super(x, y);
         haveBook = false;
@@ -326,8 +333,17 @@ class Actor extends Cell{
         }
     }
 
+    /**
+     *  This is the function that helps Actor not to get off the map
+     *
+     * @return boolean value depends Actor reached illegal zone or not
+     */
     public static boolean isInLegalZone(int x, int y){return x >= 0 && x < 9 && y < 9 && y >= 0;}
 
+    /**
+     *  This is the function that allow Actor to check whether
+     *  he/she is on the cell with cloak and if yes cloak is counting as put on
+     */
     public static void checkCloak(Actor Harry, Cell Cloak){
         if (Harry.getX() == Cloak.getX() && Harry.getY() == Cloak.getY()) {
             Harry.setHaveCloak(true);
@@ -341,13 +357,20 @@ class Actor extends Cell{
         }
     }
 
+    /**
+     *  This is the function that allow Actor to check whether
+     *  he/she is on the cell with book and if yes book is counting as picked up
+     */
     public static void checkBook(Actor Harry, Cell Book){
         if (Harry.getX() == Book.getX() && Harry.getY() == Book.getY()) {
             Harry.setHaveBook(true);
         }
     }
 
-
+    /**
+     *  This is the function that allow Actor to understand that inspector Filch ix near
+     *  if he is close map is modified
+     */
     public static void senseFilchZone(Actor Harry, Cell Filch, int scenario) {
         for (int i = Harry.getX() - scenario; i < Harry.getX() + scenario + 1; ++i) {
             for (int j = Harry.getY() - scenario; j < Harry.getY() + scenario + 1; ++j) {
@@ -376,6 +399,12 @@ class Actor extends Cell{
         }
     }
 
+    /**
+     *  This is the function that allow Actor to understand
+     *  that he/she is on the inspector's Filch perception zone
+     *
+     * @return boolean value that tells whether Actor has been caught by inspector Filch or not
+     */
     public static boolean isInFilchZone(int x, int y, Actor Harry, Cell Filch){
         if (!Harry.isHaveCloak()) {
             return Math.sqrt(Math.pow(x - Filch.getX(), 2) + Math.pow(y - Filch.getY(), 2)) < 3;
@@ -384,6 +413,10 @@ class Actor extends Cell{
         }
     }
 
+    /**
+     *  This is the function that allow Actor to understand that inspector Cat Norris is near
+     *  if he is close map is modified
+     */
     public static void senseCatZone(Actor Harry, Cell Cat, int scenario){
         for (int i = Harry.getX() - scenario; i < Harry.getX() + scenario + 1; ++i){
             for (int j = Harry.getY() - scenario; j < Harry.getY() + scenario + 1; ++j){
@@ -412,6 +445,12 @@ class Actor extends Cell{
         }
     }
 
+    /**
+     *  This is the function that allow Actor to understand
+     *  that he/she is on the inspector's Cat Norris perception zone
+     *
+     * @return boolean value that tells whether Actor has been caught by inspector Cat Norris or not
+     */
     public static boolean isInCatZone(int x, int y, Actor Harry, Cell Cat){
         if (!Harry.isHaveCloak()){
             return Math.sqrt(Math.pow(x - Cat.getX(), 2) + Math.pow(y - Cat.getY(), 2)) < 2;
@@ -420,10 +459,21 @@ class Actor extends Cell{
         }
     }
 
+    /**
+     *  This is the function that estimates movement cost to move
+     *  from that given square on the grid to the final destination
+     *
+     * @return double movement cost
+     */
     public static double H(int x, int y, Cell Destination){
         return Math.sqrt(Math.pow(x - Destination.getX(), 2) + Math.pow(y - Destination.getY(),2));
     }
 
+    /**
+     *  This is the function that helps in path-finding
+     *
+     * @return ArrayList<Cell> which is actually a path to the destination
+     */
     public static ArrayList<Cell> aStar(Actor Start, Cell Finish) {
         Cell Current;
         PriorityQueue<Map.Entry<Cell, Double>> priorityQueue = new PriorityQueue<>(Map.Entry.comparingByValue());
@@ -472,6 +522,11 @@ class Actor extends Cell{
         return path;
     }
 
+    /**
+     *  This is the function that find out information about visiting given cell
+     *
+     * @return boolean value that tells whether Actor visited cell or not
+     */
     public static boolean isVisited(int x, int y, ArrayList<Cell> visitedCells){
         for (Cell visitedCell : visitedCells) {
             if (visitedCell.getX() == x && visitedCell.getY() == y) {
@@ -481,6 +536,10 @@ class Actor extends Cell{
         return false;
     }
 
+    /**
+     *  This is the function that prints basic information about input
+     *  and path for algorithm
+     */
     public static void printAlgorithmInfo(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
         System.out.println("Scenario  : " + scenario);
         System.out.println("Harry : [" + Harry.getX() + "," + Harry.getY() + "]");
@@ -492,6 +551,12 @@ class Actor extends Cell{
         System.out.print("Path of the algorithm: ");
     }
 
+
+    /**
+     *  This is the function that helps in path-finding trying to build a solution incrementally
+     *
+     * @return ArrayList<Cell> which is actually a path to the destination
+     */
     public static ArrayList<Cell> backtracking(Actor Harry, ArrayList<Cell> visitedCells){
         ArrayList<Cell> path = new ArrayList<>();
         for (int i = Harry.getX() - 1; i < Harry.getX() + 2; ++i) {
@@ -517,6 +582,11 @@ class Actor extends Cell{
         return path;
     }
 
+
+    /**
+     *  This is the function that uses backtracking
+     *  taking into account the features of the map and scenario
+     */
     public static void followBacktracking(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
 
         System.out.println("Algorithm : Backtracking");
@@ -578,6 +648,11 @@ class Actor extends Cell{
         System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
     }
 
+
+    /**
+     *  This is the function that uses A* algorithm
+     *  taking into account the features of the map and scenario
+     */
     public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario) {
 
         System.out.println("Algorithm : A*");
@@ -670,102 +745,115 @@ class Actor extends Cell{
     }
 }
 
+/**
+ *  This is Statistic class which helps user compare two algorithms
+ */
 class Statistic{
+
+    /**
+     *  These 2 entities are for counting how many tests passed and failed
+     */
     private int passedTestsNumber;
     private int failedTestsNumber;
 
+    /**
+     *  These 2 entities are for counting the probability that Actor will win the game
+     *  using A* algorithm and using Backtracking algorithm
+     */
     private double probWinAStar;
     private double probWinBacktrack;
 
+    /**
+     *  These 2 entities are for counting how many winning outcomes using A* algorithm and Backtracking algorithm
+     */
     private int winOutcomeNumAStar;
     private int winOutcomeNumBacktrack;
 
+    /**
+     *  These 4 entities are for counting average value of steps
+     *  and time taken to reach the book and the exit using A* algorithm and Backtracking algorithms
+     */
     private double avStepNumAStar;
     private double avStepNumBacktrack;
     private long avTimeAStar;
     private long avTimeBacktrack;
 
-    public int getPassedTestsNumber() {
-        return passedTestsNumber;
-    }
+    /**
+     *  This is the constructor of class Statistic which helps to create objects
+     *  initializing its statistic entities
+     */
 
-    public int getFailedTestsNumber() {
-        return failedTestsNumber;
-    }
-
-    public double getProbWinAStar() {
-        return probWinAStar;
-    }
-
-    public double getProbWinBacktrack() {
-        return probWinBacktrack;
-    }
-
-    public int getWinOutcomeNumAStar() {
-        return winOutcomeNumAStar;
-    }
-
-    public int getWinOutcomeNumBacktrack() {
-        return winOutcomeNumBacktrack;
-    }
-
-    public double getAvStepNumAStar() {
-        return avStepNumAStar;
-    }
-
-    public double getAvStepNumBacktrack() {
-        return avStepNumBacktrack;
-    }
-
-    public long getAvTimeAStar() {
-        return avTimeAStar;
-    }
-
-    public long getAvTimeBacktrack() {
-        return avTimeBacktrack;
-    }
-
-    public void setPassedTestsNumber(int passedTestsNumber) {
+    public Statistic(int passedTestsNumber,int failedTestsNumber, double probWinAStar, double probWinBacktrack,
+                     int winOutcomeNumAStar, int winOutcomeNumBacktrack, double avStepNumAStar, double avStepNumBacktrack,
+                     long avTimeAStar, long avTimeBacktrack){
         this.passedTestsNumber = passedTestsNumber;
-    }
-
-    public void setFailedTestsNumber(int failedTestsNumber) {
-        this.failedTestsNumber = failedTestsNumber;
-    }
-
-    public void setProbWinAStar(double probWinAStar) {
+        this.failedTestsNumber= failedTestsNumber;
         this.probWinAStar = probWinAStar;
-    }
-
-    public void setProbWinBacktrack(double probWinBacktrack) {
         this.probWinBacktrack = probWinBacktrack;
-    }
-
-    public void setWinOutcomeNumAStar(int winOutcomeNumAStar) {
         this.winOutcomeNumAStar = winOutcomeNumAStar;
-    }
-
-    public void setWinOutcomeNumBacktrack(int winOutcomeNumBacktrack) {
         this.winOutcomeNumBacktrack = winOutcomeNumBacktrack;
-    }
-
-    public void setAvStepNumAStar(double avStepNumAStar) {
         this.avStepNumAStar = avStepNumAStar;
-    }
-
-    public void setAvStepNumBacktrack(double avStepNumBacktrack) {
         this.avStepNumBacktrack = avStepNumBacktrack;
-    }
-
-    public void setAvTimeAStar(long avTimeAStar) {
         this.avTimeAStar = avTimeAStar;
-    }
-
-    public void setAvTimeBacktrack(long avTimeBacktrack) {
         this.avTimeBacktrack = avTimeBacktrack;
     }
 
+    /**
+     *  These are simply setters and getters for location
+     *  It is needed to have access to it
+     */
+
+    public int getPassedTestsNumber() {return passedTestsNumber;}
+
+    public int getFailedTestsNumber() {return failedTestsNumber;}
+
+    public double getProbWinAStar() {return probWinAStar;}
+
+    public double getProbWinBacktrack() {return probWinBacktrack;}
+
+    public int getWinOutcomeNumAStar() {return winOutcomeNumAStar;}
+
+    public int getWinOutcomeNumBacktrack() {return winOutcomeNumBacktrack;}
+
+    public double getAvStepNumAStar() {return avStepNumAStar;}
+
+    public double getAvStepNumBacktrack() {return avStepNumBacktrack;}
+
+    public long getAvTimeAStar() {return avTimeAStar;}
+
+    public long getAvTimeBacktrack() {return avTimeBacktrack;}
+
+    public void setPassedTestsNumber(int passedTestsNumber) {this.passedTestsNumber = passedTestsNumber;}
+
+    public void setFailedTestsNumber(int failedTestsNumber) {this.failedTestsNumber = failedTestsNumber;}
+
+    public void setProbWinAStar(double probWinAStar) {this.probWinAStar = probWinAStar;}
+
+    public void setProbWinBacktrack(double probWinBacktrack) {this.probWinBacktrack = probWinBacktrack;}
+
+    public void setWinOutcomeNumAStar(int winOutcomeNumAStar) {this.winOutcomeNumAStar = winOutcomeNumAStar;}
+
+    public void setWinOutcomeNumBacktrack(int winOutcomeNumBacktrack) {this.winOutcomeNumBacktrack = winOutcomeNumBacktrack;}
+
+    public void setAvStepNumAStar(double avStepNumAStar) {this.avStepNumAStar = avStepNumAStar;}
+
+    public void setAvStepNumBacktrack(double avStepNumBacktrack) {this.avStepNumBacktrack = avStepNumBacktrack;}
+
+    public void setAvTimeAStar(long avTimeAStar) {this.avTimeAStar = avTimeAStar;}
+
+    public void setAvTimeBacktrack(long avTimeBacktrack) {this.avTimeBacktrack = avTimeBacktrack;}
+
+
+    /**
+     *  This is the function which print main statistics information
+     */
     public void printStatistic(){
+        if (getPassedTestsNumber() == 0 && getFailedTestsNumber() == 0 && getProbWinBacktrack() == 0 &&
+                getProbWinAStar() == 0 && getWinOutcomeNumBacktrack() == 0 && getWinOutcomeNumAStar() == 0 && getAvStepNumBacktrack() == 0 &&
+                getAvStepNumAStar() == 0 && getAvTimeBacktrack() == 0 && getAvTimeAStar() == 0){
+            System.out.println("Statistical analysis only for big amount of tests.\nPlease use generateTests() function to know more about statistics.");
+            return;
+        }
         System.out.println("\nStatistical Analysis:");
         System.out.println(getPassedTestsNumber() + " tests have been passed");
         System.out.println(getFailedTestsNumber() + " tests have been failed");
