@@ -3,9 +3,11 @@ import java.util.*;
 public class MaximLatypov {
 
     public static void main(String[] args) {
+        Statistic statistic = new Statistic();
 //        readFromConsole();
-        generateTest(50);
+        generateTest(statistic, 10000);
         System.out.println("-> This is the place where output ends");
+        statistic.printStatistic();
     }
 
     public static int generateScenario(){return (int)(1 + Math.random()*2);}
@@ -100,16 +102,18 @@ public class MaximLatypov {
         return false;
     }
 
-    public static void generateTest(int testsNumber){
+    public static void generateTest(Statistic statistic, int testsNumber){
         for (int i = 0; i < testsNumber; ++i){
             String input = generateInput();
             int scenario = generateScenario();
 
             if (findScenarioError(String.valueOf(scenario))){
+                statistic.setFailedTestsNumber(statistic.getFailedTestsNumber() + 1);
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 continue;
             }
             if (findInputValueError(input)){
+                statistic.setFailedTestsNumber(statistic.getFailedTestsNumber() + 1);
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 continue;
             }
@@ -123,14 +127,40 @@ public class MaximLatypov {
             Cell Exit = new Cell(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
 
             if (findLogicError(Harry, Filch, Cat, Book, Cloak, Exit)){
+                statistic.setFailedTestsNumber(statistic.getFailedTestsNumber() + 1);
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 continue;
             }
+            statistic.setPassedTestsNumber(statistic.getPassedTestsNumber() + 1);
+
             Actor.followBacktracking(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
+            if (Objects.equals(Harry.getOutcome(), "Win")){
+                statistic.setWinOutcomeNumBacktrack(statistic.getWinOutcomeNumBacktrack() + 1);
+
+                statistic.setAvStepNumBacktrack(statistic.getAvStepNumBacktrack() + Harry.getStep());
+                statistic.setAvTimeBacktrack(statistic.getAvTimeBacktrack() + Harry.getTimeTaken());
+            }
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+
+
             Actor.followAStar(HarryCopy, Filch, Cat, Book, Cloak, Exit, scenario);
+            if (Objects.equals(HarryCopy.getOutcome(), "Win")){
+                statistic.setWinOutcomeNumAStar(statistic.getWinOutcomeNumAStar() + 1);
+
+                statistic.setAvStepNumAStar(statistic.getAvStepNumAStar() + HarryCopy.getStep());
+                statistic.setAvTimeAStar(statistic.getAvTimeAStar() + HarryCopy.getTimeTaken());
+            }
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         }
+
+        statistic.setProbWinBacktrack((double) statistic.getWinOutcomeNumBacktrack() / statistic.getPassedTestsNumber());
+        statistic.setProbWinAStar((double) statistic.getWinOutcomeNumAStar() / statistic.getPassedTestsNumber());
+
+        statistic.setAvStepNumBacktrack(statistic.getAvStepNumBacktrack() / statistic.getWinOutcomeNumBacktrack());
+        statistic.setAvTimeBacktrack(statistic.getAvTimeBacktrack() / statistic.getWinOutcomeNumBacktrack());
+
+        statistic.setAvStepNumAStar(statistic.getAvStepNumAStar() / statistic.getWinOutcomeNumAStar());
+        statistic.setAvTimeAStar(statistic.getAvTimeAStar() / statistic.getWinOutcomeNumAStar());
     }
 
     public static void readFromConsole(){
@@ -160,6 +190,7 @@ public class MaximLatypov {
         Actor.followBacktracking(Harry,Filch,Cat,Book,Cloak,Exit,scenario);
         System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         Actor.followAStar(HarryCopy,Filch,Cat,Book,Cloak,Exit, scenario);
+        System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
     }
 }
 
@@ -597,5 +628,115 @@ class Actor extends Cell{
         System.out.println("\nOutcome: " + Harry.getOutcome());
         System.out.println("Number of steps: " + Harry.getStep());
         System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
+    }
+}
+
+class Statistic{
+    private int passedTestsNumber;
+    private int failedTestsNumber;
+
+    private double probWinAStar;
+    private double probWinBacktrack;
+
+    private int winOutcomeNumAStar;
+    private int winOutcomeNumBacktrack;
+
+    private double avStepNumAStar;
+    private double avStepNumBacktrack;
+    private long avTimeAStar;
+    private long avTimeBacktrack;
+
+    public int getPassedTestsNumber() {
+        return passedTestsNumber;
+    }
+
+    public int getFailedTestsNumber() {
+        return failedTestsNumber;
+    }
+
+    public double getProbWinAStar() {
+        return probWinAStar;
+    }
+
+    public double getProbWinBacktrack() {
+        return probWinBacktrack;
+    }
+
+    public int getWinOutcomeNumAStar() {
+        return winOutcomeNumAStar;
+    }
+
+    public int getWinOutcomeNumBacktrack() {
+        return winOutcomeNumBacktrack;
+    }
+
+    public double getAvStepNumAStar() {
+        return avStepNumAStar;
+    }
+
+    public double getAvStepNumBacktrack() {
+        return avStepNumBacktrack;
+    }
+
+    public long getAvTimeAStar() {
+        return avTimeAStar;
+    }
+
+    public long getAvTimeBacktrack() {
+        return avTimeBacktrack;
+    }
+
+    public void setPassedTestsNumber(int passedTestsNumber) {
+        this.passedTestsNumber = passedTestsNumber;
+    }
+
+    public void setFailedTestsNumber(int failedTestsNumber) {
+        this.failedTestsNumber = failedTestsNumber;
+    }
+
+    public void setProbWinAStar(double probWinAStar) {
+        this.probWinAStar = probWinAStar;
+    }
+
+    public void setProbWinBacktrack(double probWinBacktrack) {
+        this.probWinBacktrack = probWinBacktrack;
+    }
+
+    public void setWinOutcomeNumAStar(int winOutcomeNumAStar) {
+        this.winOutcomeNumAStar = winOutcomeNumAStar;
+    }
+
+    public void setWinOutcomeNumBacktrack(int winOutcomeNumBacktrack) {
+        this.winOutcomeNumBacktrack = winOutcomeNumBacktrack;
+    }
+
+    public void setAvStepNumAStar(double avStepNumAStar) {
+        this.avStepNumAStar = avStepNumAStar;
+    }
+
+    public void setAvStepNumBacktrack(double avStepNumBacktrack) {
+        this.avStepNumBacktrack = avStepNumBacktrack;
+    }
+
+    public void setAvTimeAStar(long avTimeAStar) {
+        this.avTimeAStar = avTimeAStar;
+    }
+
+    public void setAvTimeBacktrack(long avTimeBacktrack) {
+        this.avTimeBacktrack = avTimeBacktrack;
+    }
+
+    public void printStatistic(){
+        System.out.println("\nStatistical Analysis:");
+        System.out.println(getPassedTestsNumber() + " tests have been passed");
+        System.out.println(getFailedTestsNumber() + " tests have been failed");
+        System.out.printf("Probability of winning test using Backtracking method: %.3f %n", getProbWinBacktrack());
+        System.out.printf("Probability of winning test using A* method: %.3f %n", getProbWinAStar());
+        System.out.println("There was " + getWinOutcomeNumBacktrack() + " winning outcomes when Backtracking method was used");
+        System.out.println("There was " + getWinOutcomeNumAStar() + " winning outcomes when A* method was used");
+        System.out.printf("There were %.3f steps on average to reach exit using Backtracking method %n", getAvStepNumBacktrack());
+        System.out.printf("There were %.3f steps on average to reach exit using A* method %n", getAvStepNumAStar());
+        System.out.println("On average, " + getAvTimeBacktrack() + " nanoseconds needed to reach exit using Backtracking method");
+        System.out.println("On average, " + getAvTimeAStar() + " nanoseconds needed to reach exit using A* method");
     }
 }
