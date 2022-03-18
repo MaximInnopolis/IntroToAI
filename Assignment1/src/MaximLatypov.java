@@ -3,10 +3,10 @@ import java.util.*;
 public class MaximLatypov {
 
     public static void main(String[] args) {
-        Statistic statistic = new Statistic(0,0,0,0,0,0,0,0,0);
-//        readFromConsole();
-        generateTest(statistic, 1000000);
-        statistic.printStatistic();
+//        Statistic statistic = new Statistic(0,0,0,0,0,0,0,0,0);
+        readFromConsole();
+//        generateTest(statistic, 10000);
+//        statistic.printStatistic();
     }
 
     /**
@@ -33,15 +33,14 @@ public class MaximLatypov {
         }
         String map = (input.length() == 0) ? null : (input.substring(0, input.length() - 1));
 
-        Actor Harry = new Actor(Character.getNumericValue(map.charAt(1)), Character.getNumericValue(map.charAt(3)));
-        Cell Filch = new Cell(Character.getNumericValue(map.charAt(7)), Character.getNumericValue(map.charAt(9)));
-        Cell Cat = new Cell(Character.getNumericValue(map.charAt(13)), Character.getNumericValue(map.charAt(15)));
-        Cell Book = new Cell(Character.getNumericValue(map.charAt(19)), Character.getNumericValue(map.charAt(21)));
-        Cell Cloak = new Cell(Character.getNumericValue(map.charAt(25)), Character.getNumericValue(map.charAt(27)));
-        Cell Exit = new Cell(Character.getNumericValue(map.charAt(31)), Character.getNumericValue(map.charAt(33)));
-
-        if (findLogicError(Harry, Filch, Cat, Book, Cloak, Exit)){
-            generateInput();
+        if (findLogicError(new Actor(Character.getNumericValue(map.charAt(1)), Character.getNumericValue(map.charAt(3))),
+                new Cell(Character.getNumericValue(map.charAt(7)), Character.getNumericValue(map.charAt(9))),
+                new Cell(Character.getNumericValue(map.charAt(13)), Character.getNumericValue(map.charAt(15))),
+                new Cell(Character.getNumericValue(map.charAt(19)), Character.getNumericValue(map.charAt(21))),
+                new Cell(Character.getNumericValue(map.charAt(25)), Character.getNumericValue(map.charAt(27))),
+                new Cell(Character.getNumericValue(map.charAt(31)), Character.getNumericValue(map.charAt(33))))){
+            String realInput = generateInput();
+            return realInput;
         }
         return map;
     }
@@ -103,42 +102,33 @@ public class MaximLatypov {
      */
     public static boolean findLogicError(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit){
 
-        if (Math.sqrt(Math.pow(Harry.getX() - Filch.getX(), 2) + Math.pow(Harry.getY() - Filch.getY(), 2)) < 3){
-            System.out.println("Error occurred, invalid input: Harry is already in inspector's zone");
+        if (Math.sqrt(Math.pow(Harry.getX() - Filch.getX(), 2) + Math.pow(Harry.getY() - Filch.getY(), 2)) < 3){//Harry is already in Filch's zone
             return true;
         }
-        if (Math.sqrt(Math.pow(Book.getX() - Filch.getX(), 2) + Math.pow(Book.getY() - Filch.getY(), 2)) < 3){
-            System.out.println("Error occurred, invalid input: Book is in inspector's zone");
+        if (Math.sqrt(Math.pow(Book.getX() - Filch.getX(), 2) + Math.pow(Book.getY() - Filch.getY(), 2)) < 3){ //Book is in Filch's zone
             return true;
         }
-        if (Math.sqrt(Math.pow(Cloak.getX() - Filch.getX(), 2) + Math.pow(Cloak.getY() - Filch.getY(), 2)) < 3){
-            System.out.println("Error occurred, invalid input: Cloak is in inspector's zone");
+        if (Math.sqrt(Math.pow(Cloak.getX() - Filch.getX(), 2) + Math.pow(Cloak.getY() - Filch.getY(), 2)) < 3){//Cloak is in Filch's zone
             return true;
         }
-        if (Exit.getX() == Filch.getX() && Exit.getY() == Filch.getY()){
-            System.out.println("Error occurred, invalid input: Exit is in inspector's cell");
+        if (Exit.getX() == Filch.getX() && Exit.getY() == Filch.getY()){//Exit is in inspector's cell
             return true;
         }
 
-        if (Math.sqrt(Math.pow(Harry.getX() - Cat.getX(), 2) + Math.pow(Harry.getY() - Cat.getY(), 2)) < 2){
-            System.out.println("Error occurred, invalid input: Harry is already in inspector's zone");
+        if (Math.sqrt(Math.pow(Harry.getX() - Cat.getX(), 2) + Math.pow(Harry.getY() - Cat.getY(), 2)) < 2){//Harry is already in Cat's zone
             return true;
         }
-        if (Math.sqrt(Math.pow(Book.getX() - Cat.getX(), 2) + Math.pow(Book.getY() - Cat.getY(), 2)) < 2){
-            System.out.println("Error occurred, invalid input: Book is in inspector's zone");
+        if (Math.sqrt(Math.pow(Book.getX() - Cat.getX(), 2) + Math.pow(Book.getY() - Cat.getY(), 2)) < 2){//Book is in Cat's zone
             return true;
         }
-        if (Math.sqrt(Math.pow(Cloak.getX() - Cat.getX(), 2) + Math.pow(Cloak.getY() - Cat.getY(), 2)) < 2){
-            System.out.println("Error occurred, invalid input: Cloak is in inspector's zone");
+        if (Math.sqrt(Math.pow(Cloak.getX() - Cat.getX(), 2) + Math.pow(Cloak.getY() - Cat.getY(), 2)) < 2){//Cloak is in Cat's zone
             return true;
         }
-        if (Exit.getX() == Cat.getX() && Exit.getY() == Cat.getY()){
-            System.out.println("Error occurred, invalid input: Exit is in inspector's cell");
+        if (Exit.getX() == Cat.getX() && Exit.getY() == Cat.getY()){//Exit is in inspector's cell
             return true;
         }
 
-        if ((Exit.getX() == Book.getX()) && (Exit.getY() == Book.getY())){
-            System.out.println("Error occurred, invalid input: Exit and Book can not be on the same cell");
+        if ((Exit.getX() == Book.getX()) && (Exit.getY() == Book.getY())){//Exit and Book are in the same cell
             return true;
         }
         return false;
@@ -219,6 +209,7 @@ public class MaximLatypov {
         Cell Exit = new Cell(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
 
         if (findLogicError(Harry, Filch, Cat, Book, Cloak, Exit)){
+            System.out.println("Logic input error: locations of the actor and/or elements of the environment are on wrong place");
             return;
         }
         Actor.followBacktracking(Harry,Filch,Cat,Book,Cloak,Exit,scenario);
@@ -594,6 +585,8 @@ class Actor extends Cell{
         ArrayList<Cell> currentPath;
 
         while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY() || !Harry.isHaveBook()) {
+            checkBook(Harry, Book);
+            checkCloak(Harry, Cloak);
             senseCatZone(Harry, Cat, scenario);
             senseFilchZone(Harry, Filch, scenario);
             long time0 = System.nanoTime();
@@ -663,6 +656,8 @@ class Actor extends Cell{
 
         while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY() || !Harry.isHaveBook()) {
             if (!isExitReached) {
+                checkBook(Harry, Book);
+                checkCloak(Harry, Cloak);
                 senseCatZone(Harry, Cat, scenario);
                 senseFilchZone(Harry, Filch, scenario);
                 long time1 = System.nanoTime();
