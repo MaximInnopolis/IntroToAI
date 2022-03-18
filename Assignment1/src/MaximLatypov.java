@@ -3,8 +3,8 @@ import java.util.*;
 public class MaximLatypov {
 
     public static void main(String[] args) {
-        readFromConsole();
-//        generateTest(50);
+//        readFromConsole();
+        generateTest(50);
         System.out.println("-> This is the place where output ends");
     }
 
@@ -102,33 +102,33 @@ public class MaximLatypov {
 
     public static void generateTest(int testsNumber){
         for (int i = 0; i < testsNumber; ++i){
-            String input_2 = generateInput();
-            int scenario_2 = generateScenario();
+            String input = generateInput();
+            int scenario = generateScenario();
 
-            if (findScenarioError(String.valueOf(scenario_2))){
+            if (findScenarioError(String.valueOf(scenario))){
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 continue;
             }
-            if (findInputValueError(input_2)){
+            if (findInputValueError(input)){
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 continue;
             }
 
-            Actor Harry = new Actor(Character.getNumericValue(input_2.charAt(1)), Character.getNumericValue(input_2.charAt(3)));
+            Actor Harry = new Actor(Character.getNumericValue(input.charAt(1)), Character.getNumericValue(input.charAt(3)));
             Actor HarryCopy = new Actor(Harry.getX(), Harry.getY());
-            Cell Filch = new Cell(Character.getNumericValue(input_2.charAt(7)), Character.getNumericValue(input_2.charAt(9)));
-            Cell Cat = new Cell(Character.getNumericValue(input_2.charAt(13)), Character.getNumericValue(input_2.charAt(15)));
-            Cell Book = new Cell(Character.getNumericValue(input_2.charAt(19)), Character.getNumericValue(input_2.charAt(21)));
-            Cell Cloak = new Cell(Character.getNumericValue(input_2.charAt(25)), Character.getNumericValue(input_2.charAt(27)));
-            Cell Exit = new Cell(Character.getNumericValue(input_2.charAt(31)), Character.getNumericValue(input_2.charAt(33)));
+            Cell Filch = new Cell(Character.getNumericValue(input.charAt(7)), Character.getNumericValue(input.charAt(9)));
+            Cell Cat = new Cell(Character.getNumericValue(input.charAt(13)), Character.getNumericValue(input.charAt(15)));
+            Cell Book = new Cell(Character.getNumericValue(input.charAt(19)), Character.getNumericValue(input.charAt(21)));
+            Cell Cloak = new Cell(Character.getNumericValue(input.charAt(25)), Character.getNumericValue(input.charAt(27)));
+            Cell Exit = new Cell(Character.getNumericValue(input.charAt(31)), Character.getNumericValue(input.charAt(33)));
 
             if (findLogicError(Harry, Filch, Cat, Book, Cloak, Exit)){
                 System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 continue;
             }
-            Actor.followBacktracking(Harry, Filch, Cat, Book, Cloak, Exit, scenario_2);
+            Actor.followBacktracking(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-            Actor.followAStar(HarryCopy, Filch, Cat, Book, Cloak, Exit, scenario_2);
+            Actor.followAStar(HarryCopy, Filch, Cat, Book, Cloak, Exit, scenario);
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
         }
     }
@@ -194,7 +194,11 @@ class Actor extends Cell{
 
     private boolean haveBook;
     private boolean haveCloak;
+
     private int step;
+    private long timeTaken;
+
+    private String outcome;
     public static int[][] map = new int[9][9];
     public static Stack<Cell> stack = new Stack<>();
 
@@ -206,8 +210,17 @@ class Actor extends Cell{
         return haveCloak;
     }
 
+
     public int getStep() {
         return step;
+    }
+
+    public long getTimeTaken() {
+        return timeTaken;
+    }
+
+    public String getOutcome() {
+        return outcome;
     }
 
     public void setHaveBook(boolean haveBook) {
@@ -222,14 +235,25 @@ class Actor extends Cell{
         this.step = step;
     }
 
+    public void setTimeTaken(long timeTaken) {
+        this.timeTaken = timeTaken;
+    }
+
+    public void setOutcome(String outcome) {
+        this.outcome = outcome;
+    }
+
     public Actor(int x, int y) {
         super(x, y);
         haveBook = false;
         haveCloak = false;
+
+        step = 0;
+        timeTaken = 0;
+        outcome = "";
         for (int[] raw: map){
             Arrays.fill(raw, 0);
         }
-        step = 0;
     }
 
     public static boolean isInLegalZone(int x, int y){return x >= 0 && x < 9 && y < 9 && y >= 0;}
@@ -436,10 +460,14 @@ class Actor extends Cell{
         while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY() || !Harry.isHaveBook()) {
             senseCatZone(Harry, Cat, scenario);
             senseFilchZone(Harry, Filch, scenario);
+            long time0 = System.nanoTime();
             currentPath = backtracking(Harry, visitedCells);
+            Harry.setTimeTaken(Harry.getTimeTaken() + System.nanoTime() - time0);
             if (currentPath == null){
-                System.out.println("\nOutcome: Lose (Impossible to reach exit)");
+                Harry.setOutcome("Lose");
+                System.out.println("\nOutcome: " + Harry.getOutcome() + " (Impossible to reach exit)");
                 System.out.println("Number of steps: " + Harry.getStep());
+                System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
                 return;
             }
             Harry.setX(currentPath.get(0).getX());
@@ -447,8 +475,10 @@ class Actor extends Cell{
             Harry.setStep(Harry.getStep() + 1);
             System.out.print("[" + Harry.getX() + "," + Harry.getY() + "]");
             if (isInCatZone(Harry.getX(), Harry.getY(), Harry, Cat) || isInFilchZone(Harry.getX(), Harry.getY(),Harry, Filch)){
-                System.out.println("\nOutcome: Lose (Harry has been caught by inspector)");
+                Harry.setOutcome("Lose");
+                System.out.println("\nOutcome: " + Harry.getOutcome() + " (Harry has been caught by inspector)");
                 System.out.println("Number of steps: " + Harry.getStep());
+                System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
                 return;
             }
             if (Harry.getX() == Exit.getX() && Harry.getY() == Exit.getY()){
@@ -457,7 +487,9 @@ class Actor extends Cell{
             checkBook(Harry, Book);
             checkCloak(Harry, Cloak);
             if (isExitReached && Harry.isHaveBook()){
+                long time1 = System.nanoTime();
                 currentPath = aStar(Harry, Exit);
+                Harry.setTimeTaken(Harry.getTimeTaken() + System.nanoTime() - time1);
                 visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
                 for (Cell cell : currentPath){
                     Harry.setX(cell.getX());
@@ -470,8 +502,10 @@ class Actor extends Cell{
                 visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
             }
         }
-        System.out.println("\nOutcome: Win");
+        Harry.setOutcome("Win");
+        System.out.println("\nOutcome: " + Harry.getOutcome());
         System.out.println("Number of steps: " + Harry.getStep());
+        System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
     }
 
     public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario) {
@@ -479,7 +513,9 @@ class Actor extends Cell{
         System.out.println("Algorithm : A*");
         printAlgorithmInfo(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
         boolean isExitReached = false;
+        long time0 = System.nanoTime();
         ArrayList<Cell> currentPath = aStar(Harry, Exit);
+        Harry.setTimeTaken(Harry.getTimeTaken() + System.nanoTime() - time0);
         ArrayList<Cell> visitedCells = new ArrayList<>();
 
         visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
@@ -488,7 +524,9 @@ class Actor extends Cell{
             if (!isExitReached) {
                 senseCatZone(Harry, Cat, scenario);
                 senseFilchZone(Harry, Filch, scenario);
+                long time1 = System.nanoTime();
                 currentPath = aStar(Harry, Exit);
+                Harry.setTimeTaken(Harry.getTimeTaken() + System.nanoTime() - time1);
             }
             if (currentPath.isEmpty()) {
                 ArrayList<Cell> shortestPath = null;
@@ -501,7 +539,9 @@ class Actor extends Cell{
                         if (isVisited(i, j, visitedCells)) {
                             continue;
                         }
+                        long time2 = System.nanoTime();
                         currentPath = aStar(Harry, new Cell(i, j));
+                        Harry.setTimeTaken(Harry.getTimeTaken() + System.nanoTime() - time2);
                         if (currentPath.isEmpty()) {
                             continue;
                         }
@@ -518,8 +558,10 @@ class Actor extends Cell{
                     }
                 }
                 if (shortestPath == null) {
-                    System.out.println("\nOutcome: Lose (Impossible to reach exit)");
+                    Harry.setOutcome("Lose");
+                    System.out.println("\nOutcome: " + Harry.getOutcome() + " (Impossible to reach exit)");
                     System.out.println("Number of steps: " + Harry.getStep());
+                    System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
                 }
                 currentPath = shortestPath;
             }
@@ -529,8 +571,10 @@ class Actor extends Cell{
             Harry.setX(currentPath.get(0).getX());
             Harry.setY(currentPath.get(0).getY());
             if (isInCatZone(Harry.getX(), Harry.getY(),Harry, Cat) || isInFilchZone(Harry.getX(), Harry.getY(),Harry, Filch)){
-                System.out.println("\nOutcome: Lose (Harry has been caught by inspector)");
+                Harry.setOutcome("Lose");
+                System.out.println("\nOutcome: " + Harry.getOutcome() + " (Harry has been caught by inspector)");
                 System.out.println("Number of steps: " + Harry.getStep());
+                System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
                 return;
             }
             Harry.setStep(Harry.getStep() + 1);
@@ -549,7 +593,9 @@ class Actor extends Cell{
             senseCatZone(Harry, Cat, scenario);
             senseFilchZone(Harry, Filch, scenario);
         }
-        System.out.println("\nOutcome: Win");
+        Harry.setOutcome("Win");
+        System.out.println("\nOutcome: " + Harry.getOutcome());
         System.out.println("Number of steps: " + Harry.getStep());
+        System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
     }
 }
