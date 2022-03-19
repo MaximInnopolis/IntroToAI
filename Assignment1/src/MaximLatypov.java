@@ -5,7 +5,7 @@ public class MaximLatypov {
     public static void main(String[] args) {
         Statistic statistic = new Statistic(0,0,0,0,0,0,0,0,0);
 //        readFromConsole();
-        generateTest(statistic, 1000000);
+        generateTest(statistic, 100000);
         statistic.printStatistic();
     }
 
@@ -158,7 +158,6 @@ public class MaximLatypov {
                 statistic.setAvTimeBacktrack(statistic.getAvTimeBacktrack() + Harry.getTimeTaken());
             }
             System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-
 
             Actor.followAStar(HarryCopy, Filch, Cat, Book, Cloak, Exit, scenario);
             if (Objects.equals(HarryCopy.getOutcome(), "Win")){
@@ -732,12 +731,6 @@ class Actor extends Cell{
         System.out.println("\nOutcome: " + Harry.getOutcome());
         System.out.println("Number of steps: " + Harry.getStep());
         System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
-    }
-
-    public ArrayList<Cell> getShortestPath(Actor Harry, Cell Book, Cell Exit){
-        ArrayList<Cell> path = aStar(Harry,Book);
-        path.addAll(aStar((Actor) Book,Exit));
-        return path;
     }
 }
 
