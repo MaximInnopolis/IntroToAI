@@ -5,7 +5,7 @@ public class MaximLatypov {
     public static void main(String[] args) {
         Statistic statistic = new Statistic(0,0,0,0,0,0,0,0,0);
 //        readFromConsole();
-        generateTest(statistic, 10000);
+        generateTest(statistic, 1000000);
         statistic.printStatistic();
     }
 
@@ -29,9 +29,9 @@ public class MaximLatypov {
 
         input.append("[").append(0).append(",").append(0).append("] ");
         for (int i = 0; i < 5; ++i){
-            input.append("[").append(new Random().nextInt(8)).append(",").append(new Random().nextInt(8)).append("] ");
+            input.append("[").append(new Random().nextInt(8)).append(",").append(new Random().nextInt(8)).append((i < 4) ? "] ":"");
         }
-        String map = (input.length() == 0) ? null : (input.substring(0, input.length() - 1));
+        String map = input.toString();
 
         if (findLogicError(new Actor(Character.getNumericValue(map.charAt(1)), Character.getNumericValue(map.charAt(3))),
                 new Cell(Character.getNumericValue(map.charAt(7)), Character.getNumericValue(map.charAt(9))),
@@ -66,13 +66,17 @@ public class MaximLatypov {
      */
     public static boolean findInputValueError(String input) {
 
+        if (input.length() != 35){
+            System.out.println("Error occurred, invalid input: illegal number of input values");
+            return true;
+        }
+
         for (int i = 0; i < input.length(); ++i){
             if (((input.charAt(i) > 56) || (input.charAt(i) < 48))
                     && ((input.charAt(i) != '[') && (input.charAt(i) != ']') && (input.charAt(i) != ',') && (input.charAt(i) != ' '))){
                 System.out.println("Error occurred, invalid input: input value out of legal range");
                 return true;
             }
-            return false;
         }
 
         for (int i = 1, j = 3; i < 32; i = i + 6, j = i + 2){
@@ -84,11 +88,6 @@ public class MaximLatypov {
                 System.out.println("Error occurred, invalid input: input value is illegal");
                 return true;
             }
-        }
-
-        if (input.length() != 35){
-            System.out.println("Error occurred, invalid input: illegal number of input values");
-            return true;
         }
         return false;
     }
@@ -537,17 +536,6 @@ class Actor extends Cell{
         System.out.print("Path of the algorithm: ");
     }
 
-//    public static void printMap(){
-//        for (int i = 0; i < 9; ++i){
-//            System.out.print("|");
-//            for (int j = 0; j < 9; ++j){
-//                System.out.print(map[i][j] + "|");
-//            }
-//            System.out.println();
-//        }
-//    }
-
-
     /**
      *  This is the function that helps in path-finding trying to build a solution incrementally
      *
@@ -744,6 +732,12 @@ class Actor extends Cell{
         System.out.println("\nOutcome: " + Harry.getOutcome());
         System.out.println("Number of steps: " + Harry.getStep());
         System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
+    }
+
+    public ArrayList<Cell> getShortestPath(Actor Harry, Cell Book, Cell Exit){
+        ArrayList<Cell> path = aStar(Harry,Book);
+        path.addAll(aStar((Actor) Book,Exit));
+        return path;
     }
 }
 
