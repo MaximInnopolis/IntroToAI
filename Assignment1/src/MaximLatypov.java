@@ -278,7 +278,7 @@ class Actor extends Cell{
      * in order to bypass them. Stack is needed for following backtracking method
      */
     public static int[][] map = new int[9][9];
-    public static Stack<Cell> stack;
+    public Stack<Cell> stack = new Stack<>();
 
     /**
      *  These are simply setters and getters for location
@@ -318,7 +318,6 @@ class Actor extends Cell{
         for (int[] raw: map){
             Arrays.fill(raw, 0);
         }
-        stack = new Stack<>();
     }
 
     /**
@@ -558,15 +557,15 @@ class Actor extends Cell{
                 if (isVisited(i, j, visitedCells)) {
                     continue;
                 }
-                stack.push(new Cell(Harry.getX(), Harry.getY()));
+                Harry.stack.push(new Cell(Harry.getX(), Harry.getY()));
                 path.add(new Cell(i, j));
                 return path;
             }
         }
-        if (stack.isEmpty()){
+        if (Harry.stack.isEmpty()){
             return null;
         }
-        path.add(stack.pop());
+        path.add(Harry.stack.pop());
         return path;
     }
 
