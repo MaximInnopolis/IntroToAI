@@ -39,8 +39,7 @@ public class MaximLatypov {
                 new Cell(Character.getNumericValue(map.charAt(19)), Character.getNumericValue(map.charAt(21))),
                 new Cell(Character.getNumericValue(map.charAt(25)), Character.getNumericValue(map.charAt(27))),
                 new Cell(Character.getNumericValue(map.charAt(31)), Character.getNumericValue(map.charAt(33))))){
-            String realInput = generateInput();
-            return realInput;
+            return generateInput();
         }
         return map;
     }
@@ -538,6 +537,16 @@ class Actor extends Cell{
         System.out.print("Path of the algorithm: ");
     }
 
+//    public static void printMap(){
+//        for (int i = 0; i < 9; ++i){
+//            System.out.print("|");
+//            for (int j = 0; j < 9; ++j){
+//                System.out.print(map[i][j] + "|");
+//            }
+//            System.out.println();
+//        }
+//    }
+
 
     /**
      *  This is the function that helps in path-finding trying to build a solution incrementally
@@ -596,7 +605,7 @@ class Actor extends Cell{
                 Harry.setOutcome("Lose");
                 System.out.println("\nOutcome: " + Harry.getOutcome() + " (Impossible to reach exit)");
                 System.out.println("Number of steps: " + Harry.getStep());
-                System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
+                System.out.println("Time taken to reach the door: Harry will never reach exit");
                 return;
             }
             Harry.setX(currentPath.get(0).getX());
@@ -607,7 +616,7 @@ class Actor extends Cell{
                 Harry.setOutcome("Lose");
                 System.out.println("\nOutcome: " + Harry.getOutcome() + " (Harry has been caught by inspector)");
                 System.out.println("Number of steps: " + Harry.getStep());
-                System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
+                System.out.println("Time taken to reach the door: Harry will never reach exit");
                 return;
             }
             if (Harry.getX() == Exit.getX() && Harry.getY() == Exit.getY()){
@@ -635,6 +644,7 @@ class Actor extends Cell{
         System.out.println("\nOutcome: " + Harry.getOutcome());
         System.out.println("Number of steps: " + Harry.getStep());
         System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
+//        printMap();
     }
 
 
@@ -697,7 +707,7 @@ class Actor extends Cell{
                     Harry.setOutcome("Lose");
                     System.out.println("\nOutcome: " + Harry.getOutcome() + " (Impossible to reach exit)");
                     System.out.println("Number of steps: " + Harry.getStep());
-                    System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
+                    System.out.println("Time taken to reach the door: Harry will never reach exit");
                 }
                 currentPath = shortestPath;
             }
@@ -707,10 +717,11 @@ class Actor extends Cell{
             Harry.setX(currentPath.get(0).getX());
             Harry.setY(currentPath.get(0).getY());
             if (isInCatZone(Harry.getX(), Harry.getY(),Harry, Cat) || isInFilchZone(Harry.getX(), Harry.getY(),Harry, Filch)){
+                Harry.setStep(Harry.getStep() + 1);
                 Harry.setOutcome("Lose");
                 System.out.println("\nOutcome: " + Harry.getOutcome() + " (Harry has been caught by inspector)");
                 System.out.println("Number of steps: " + Harry.getStep());
-                System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds");
+                System.out.println("Time taken to reach the door: Harry will never reach exit");
                 return;
             }
             Harry.setStep(Harry.getStep() + 1);
