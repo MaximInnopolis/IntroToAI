@@ -3,10 +3,10 @@ import java.util.*;
 public class MaximLatypov {
 
     public static void main(String[] args) {
-//        Statistic statistic = new Statistic(0,0,0,0,0,0,0,0,0);
-        readFromConsole();
-//        generateTest(statistic, 10000);
-//        statistic.printStatistic();
+        Statistic statistic = new Statistic(0,0,0,0,0,0,0,0,0);
+//        readFromConsole();
+        generateTest(statistic, 10000);
+        statistic.printStatistic();
     }
 
     /**
@@ -278,7 +278,7 @@ class Actor extends Cell{
      * in order to bypass them. Stack is needed for following backtracking method
      */
     public static int[][] map = new int[9][9];
-    public static Stack<Cell> stack = new Stack<>();
+    public static Stack<Cell> stack;
 
     /**
      *  These are simply setters and getters for location
@@ -318,6 +318,7 @@ class Actor extends Cell{
         for (int[] raw: map){
             Arrays.fill(raw, 0);
         }
+        stack = new Stack<>();
     }
 
     /**
