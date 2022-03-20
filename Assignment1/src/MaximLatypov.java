@@ -512,15 +512,14 @@ class Actor extends Cell{
      *  This is the function that prints basic information about input
      *  and path for algorithm
      */
-    public static void printAlgorithmInfo(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
+    public static void printMapInfo(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
         System.out.println("Scenario  : " + scenario);
         System.out.println("Harry : [" + Harry.getX() + "," + Harry.getY() + "]");
         System.out.println("Filch : [" + Filch.getX() + "," + Filch.getY() + "]");
         System.out.println("Cat   : [" + Cat.getX() + "," + Cat.getY() + "]");
         System.out.println("Book  : [" + Book.getX() + "," + Book.getY() + "]");
         System.out.println("Cloak : [" + Cloak.getX() + "," + Cloak.getY() + "]");
-        System.out.println("Exit  : [" + Exit.getX() + "," + Exit.getY() + "]");
-        System.out.print("Path of the algorithm: ");
+        System.out.println("Exit  : [" + Exit.getX() + "," + Exit.getY() + "]\n");
     }
 
     /**
@@ -558,8 +557,9 @@ class Actor extends Cell{
      *  taking into account the features of the map and scenario
      */
     public static void followBacktracking(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
+        printMapInfo(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
         System.out.println("Algorithm : Backtracking");
-        printAlgorithmInfo(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
+        System.out.print("Path of the algorithm: ");
         boolean isExitReached = false;
         ArrayList<Cell> visitedCells = new ArrayList<>();
         visitedCells.add(new Cell(0,0));
@@ -624,7 +624,7 @@ class Actor extends Cell{
      */
     public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario) {
         System.out.println("Algorithm : A*");
-        printAlgorithmInfo(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
+        System.out.print("Path of the algorithm: ");
         boolean isExitReached = false;
         long time0 = System.nanoTime();
         ArrayList<Cell> currentPath = aStar(Harry, Exit);
@@ -737,7 +737,7 @@ class Actor extends Cell{
                 Harry.setOutcome("Lose");
                 System.out.println("Outcome: " + Harry.getOutcome() + " (Impossible to reach exit)");
                 System.out.println("Number of steps: " + Harry.getStep());
-                System.out.println("Time taken to reach the door: Harry will never reach exit\n");
+                System.out.println("Time taken to reach the door: Harry will never reach exit");
                 return false;
             }
             Harry.setX(path.get(0).getX());
@@ -781,7 +781,7 @@ class Actor extends Cell{
                 Harry.setOutcome("Lose");
                 System.out.println("Outcome: " + Harry.getOutcome() + " (Impossible to reach exit)");
                 System.out.println("Number of steps: " + Harry.getStep());
-                System.out.println("Time taken to reach the door: Harry will never reach exit\n");
+                System.out.println("Time taken to reach the door: Harry will never reach exit");
                 return;
             }
             if (path.size() == 0){
@@ -823,11 +823,10 @@ class Actor extends Cell{
                 Harry.setOutcome("Lose");
                 System.out.println("Outcome: " + Harry.getOutcome() + " (Impossible to reach exit)");
                 System.out.println("Number of steps: " + Harry.getStep());
-                System.out.println("Time taken to reach the door: Harry will never reach exit\n");
+                System.out.println("Time taken to reach the door: Harry will never reach exit");
                 return;
             }
             if (path.size() == 0){
-                findPathToCloak(Harry, Filch, Cat, Cloak, scenario);
                 if (!findPathToCloak(Harry, Filch, Cat, Cloak, scenario)){
                     return;
                 }
