@@ -965,7 +965,7 @@ class Statistic{
                 getWinOutcomeNumBacktrack() == 0 && getWinOutcomeNumAStar() == 0 && getWinOutcomeNumShPath() == 0 &&
                 getAvStepNumBacktrack() == 0 && getAvStepNumAStar() == 0 && getAvStepNumShPath() == 0 &&
                 getAvTimeBacktrack() == 0 && getAvTimeAStar() == 0 && getAvTimeShPath() == 0){
-            System.out.println("Statistical analysis only for big amount of tests.\nPlease use generateTests() function to know more about statistics.");
+            System.out.println("Statistical analysis is only for big amount of tests.\nPlease use generateTests() function to know more about statistics.");
             return;
         }
         System.out.println("\nStatistical Analysis:");
