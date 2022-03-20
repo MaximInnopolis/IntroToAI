@@ -1,7 +1,6 @@
 import java.util.*;
 
 public class MaximLatypov {
-
     public static void main(String[] args) {
         Statistic statistic = new Statistic(0,0,0,
                 0,0,0,0,
@@ -19,7 +18,6 @@ public class MaximLatypov {
     public static int generateScenario(){
         return (int)(1 + Math.random()*2);
     }
-
     /**
      * This function generates string with random coordinates of necessary objects
      * between 0 and 8 which can be used in the future
@@ -67,7 +65,6 @@ public class MaximLatypov {
      * @return boolean value true if it meets input error
      */
     public static boolean findInputValueError(String input) {
-
         if (input.length() != 35){
             System.out.println("Error occurred, invalid input: illegal number of input values");
             return true;
@@ -101,7 +98,6 @@ public class MaximLatypov {
      * @return boolean value if it meets logic error
      */
     public static boolean findLogicError(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit){
-
         if (Math.sqrt(Math.pow(Harry.getX() - Filch.getX(), 2) + Math.pow(Harry.getY() - Filch.getY(), 2)) < 3){//Harry is already in Filch's zone
             return true;
         }
@@ -114,7 +110,6 @@ public class MaximLatypov {
         if (Exit.getX() == Filch.getX() && Exit.getY() == Filch.getY()){//Exit is in inspector's cell
             return true;
         }
-
         if (Math.sqrt(Math.pow(Harry.getX() - Cat.getX(), 2) + Math.pow(Harry.getY() - Cat.getY(), 2)) < 2){//Harry is already in Cat's zone
             return true;
         }
@@ -127,11 +122,9 @@ public class MaximLatypov {
         if (Exit.getX() == Cat.getX() && Exit.getY() == Cat.getY()){//Exit is in inspector's cell
             return true;
         }
-
         //Exit and Book are in the same cell
         return (Exit.getX() == Book.getX()) && (Exit.getY() == Book.getY());
     }
-
 
     /**
      * This function generates tests which number can be chosen by user
@@ -154,7 +147,6 @@ public class MaximLatypov {
             Actor.followBacktracking(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
             if (Objects.equals(Harry.getOutcome(), "Win")){
                 statistic.setWinOutcomeNumBacktrack(statistic.getWinOutcomeNumBacktrack() + 1);
-
                 statistic.setAvStepNumBacktrack(statistic.getAvStepNumBacktrack() + Harry.getStep());
                 statistic.setAvTimeBacktrack(statistic.getAvTimeBacktrack() + Harry.getTimeTaken());
             }
@@ -162,14 +154,12 @@ public class MaximLatypov {
             Actor.followAStar(HarryCopy, Filch, Cat, Book, Cloak, Exit, scenario);
             if (Objects.equals(HarryCopy.getOutcome(), "Win")){
                 statistic.setWinOutcomeNumAStar(statistic.getWinOutcomeNumAStar() + 1);
-
                 statistic.setAvStepNumAStar(statistic.getAvStepNumAStar() + HarryCopy.getStep());
                 statistic.setAvTimeAStar(statistic.getAvTimeAStar() + HarryCopy.getTimeTaken());
             }
             Actor.findShortestPath(HarryCopy1, Filch, Cat, Book, Cloak, Exit, scenario);
             if (Objects.equals(HarryCopy.getOutcome(), "Win")){
                 statistic.setWinOutcomeNumShPath(statistic.getWinOutcomeNumShPath() + 1);
-
                 statistic.setAvStepNumShPath(statistic.getAvStepNumShPath() + HarryCopy1.getStep());
                 statistic.setAvTimeShPath(statistic.getAvTimeShPath() + HarryCopy1.getTimeTaken());
             }
@@ -189,7 +179,6 @@ public class MaximLatypov {
         statistic.setAvTimeAStar(statistic.getAvTimeAStar() / statistic.getWinOutcomeNumAStar());
         statistic.setAvTimeShPath(statistic.getAvTimeShPath() / statistic.getWinOutcomeNumShPath());
     }
-
 
     /**
      * This function allow user manually add from console input and compare algorithms on his/her own
@@ -231,7 +220,6 @@ public class MaximLatypov {
  * This is class which can be all static (not moving) creatures
  */
 class Cell{
-
     /**
      * These are 2 entities (location) of Cell class
      */
@@ -250,13 +238,10 @@ class Cell{
      *  These are simply setters and getters for location
      *  It is needed to have access to it
      */
-
     public int getX() {return x;}
-
     public int getY() {return y;}
 
     public void setX(int x) {this.x = x;}
-
     public void setY(int y) {this.y = y;}
 }
 
@@ -293,23 +278,15 @@ class Actor extends Cell{
      *  It is needed to have access to it
      */
     public boolean isHaveBook() {return haveBook;}
-
     public boolean isHaveCloak() {return haveCloak;}
-
     public int getStep() {return step;}
-
     public long getTimeTaken() {return timeTaken;}
-
     public String getOutcome() {return outcome;}
 
     public void setHaveBook(boolean haveBook) {this.haveBook = haveBook;}
-
     public void setHaveCloak(boolean haveCloak) {this.haveCloak = haveCloak;}
-
     public void setStep(int step) {this.step = step;}
-
     public void setTimeTaken(long timeTaken) {this.timeTaken = timeTaken;}
-
     public void setOutcome(String outcome) {this.outcome = outcome;}
 
     /**
@@ -581,10 +558,8 @@ class Actor extends Cell{
      *  taking into account the features of the map and scenario
      */
     public static void followBacktracking(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
-
         System.out.println("Algorithm : Backtracking");
         printAlgorithmInfo(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
-
         boolean isExitReached = false;
         ArrayList<Cell> visitedCells = new ArrayList<>();
         visitedCells.add(new Cell(0,0));
@@ -643,13 +618,11 @@ class Actor extends Cell{
         System.out.println("Time taken to reach the door: " + Harry.getTimeTaken() + " nanoseconds\n");
     }
 
-
     /**
      *  This is the function that uses A* algorithm
      *  taking into account the features of the map and scenario
      */
     public static void followAStar(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario) {
-
         System.out.println("Algorithm : A*");
         printAlgorithmInfo(Harry, Filch, Cat, Book, Cloak, Exit, scenario);
         boolean isExitReached = false;
@@ -657,7 +630,6 @@ class Actor extends Cell{
         ArrayList<Cell> currentPath = aStar(Harry, Exit);
         Harry.setTimeTaken(Harry.getTimeTaken() + System.nanoTime() - time0);
         ArrayList<Cell> visitedCells = new ArrayList<>();
-
         visitedCells.add(new Cell(Harry.getX(), Harry.getY()));
 
         while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY() || !Harry.isHaveBook()) {
@@ -749,7 +721,6 @@ class Actor extends Cell{
      *
      * @return boolean true if it found path to the cloak
      */
-
     public static boolean findPathToCloak(Actor Harry, Cell Filch, Cell Cat, Cell Cloak, int scenario){
         long time0 = System.nanoTime();
         ArrayList<Cell> path = aStar(Harry, Cloak);
@@ -788,7 +759,6 @@ class Actor extends Cell{
         }
         return true;
     }
-
 
     /**
      * This is the function that returns the minimum path from Start to Book and then to Exit.
@@ -842,7 +812,6 @@ class Actor extends Cell{
             senseCatZone(Harry, Cat, scenario);
             senseFilchZone(Harry, Filch, scenario);
         }
-
         while (Harry.getX() != Exit.getX() || Harry.getY() != Exit.getY()) {
             checkCloak(Harry, Cloak);
             senseCatZone(Harry, Cat, scenario);
@@ -885,7 +854,6 @@ class Actor extends Cell{
             senseCatZone(Harry, Cat, scenario);
             senseFilchZone(Harry, Filch, scenario);
         }
-
         Harry.setOutcome("Win");
         System.out.println("\nOutcome: " + Harry.getOutcome());
         System.out.println("Number of steps: " + Harry.getStep());
@@ -904,7 +872,7 @@ class Statistic{
     private int testsNumber;
 
     /**
-     *  These 4 entities are for counting the probability that Actor will win the game
+     *  These 3 entities are for counting the probability that Actor will win the game
      *  using A* algorithm and using Backtracking algorithm and using Shortest path
      */
     private double probWinAStar;
@@ -935,7 +903,6 @@ class Statistic{
      *  This is the constructor of class Statistic which helps to create objects
      *  initializing its statistic entities
      */
-
     public Statistic(int testsNumber, double probWinAStar, double probWinBacktrack,
                      int winOutcomeNumAStar, int winOutcomeNumBacktrack, double avStepNumAStar, double avStepNumBacktrack,
                      long avTimeAStar, long avTimeBacktrack, double avStepNumShPath, long avTimeShPath){
@@ -956,59 +923,39 @@ class Statistic{
      *  These are simply setters and getters for location
      *  It is needed to have access to it
      */
-
     public int getTestsNumber() {return testsNumber;}
-
     public double getProbWinAStar() {return probWinAStar;}
-
     public double getProbWinBacktrack() {return probWinBacktrack;}
-
     public double getProbWinShPath() {return probWinShPath;}
 
     public int getWinOutcomeNumAStar() {return winOutcomeNumAStar;}
-
     public int getWinOutcomeNumBacktrack() {return winOutcomeNumBacktrack;}
-
     public int getWinOutcomeNumShPath(){return winOutcomeNumShPath;}
 
     public double getAvStepNumAStar() {return avStepNumAStar;}
-
     public double getAvStepNumBacktrack() {return avStepNumBacktrack;}
-
     public double getAvStepNumShPath() {return avStepNumShPath;}
 
     public long getAvTimeAStar() {return avTimeAStar;}
-
     public long getAvTimeBacktrack() {return avTimeBacktrack;}
-
     public long getAvTimeShPath() {return avTimeShPath;}
 
     public void setTestsNumber(int testsNumber) {this.testsNumber = testsNumber;}
-
     public void setProbWinAStar(double probWinAStar) {this.probWinAStar = probWinAStar;}
-
     public void setProbWinBacktrack(double probWinBacktrack) {this.probWinBacktrack = probWinBacktrack;}
-
     public void setProbWinShPath(double probWinShPath) {this.probWinShPath = probWinShPath;}
 
     public void setWinOutcomeNumAStar(int winOutcomeNumAStar) {this.winOutcomeNumAStar = winOutcomeNumAStar;}
-
     public void setWinOutcomeNumBacktrack(int winOutcomeNumBacktrack) {this.winOutcomeNumBacktrack = winOutcomeNumBacktrack;}
-
     public void setWinOutcomeNumShPath(int winOutcomeNumShPath) {this.winOutcomeNumShPath = winOutcomeNumShPath;}
 
     public void setAvStepNumAStar(double avStepNumAStar) {this.avStepNumAStar = avStepNumAStar;}
-
     public void setAvStepNumBacktrack(double avStepNumBacktrack) {this.avStepNumBacktrack = avStepNumBacktrack;}
-
     public void setAvStepNumShPath(double avStepNumShPath) {this.avStepNumShPath = avStepNumShPath;}
 
     public void setAvTimeAStar(long avTimeAStar) {this.avTimeAStar = avTimeAStar;}
-
     public void setAvTimeBacktrack(long avTimeBacktrack) {this.avTimeBacktrack = avTimeBacktrack;}
-
     public void setAvTimeShPath(long avTimeShPath) {this.avTimeShPath = avTimeShPath;}
-
 
     /**
      *  This is the function which print main statistics information
