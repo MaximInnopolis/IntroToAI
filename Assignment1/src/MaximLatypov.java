@@ -5,8 +5,8 @@ public class MaximLatypov {
         Statistic statistic = new Statistic(0,0,0,
                 0,0,0,0,
                 0,0,0, 0);
-//        readFromConsole();
-        generateTest(statistic, 1000);
+        readFromConsole();
+        generateTest(statistic, 1000); //The second parameter can be manually entered by TA (Highly recommend not to enter more than 10000)
         statistic.printStatistic();
     }
 
@@ -717,7 +717,7 @@ class Actor extends Cell{
     /**
      *  This is the function that uses A* algorithm
      *  taking into account the features of the map and scenario
-     *  to find path to the cloakS
+     *  to find path to the cloak
      *
      * @return boolean true if it found path to the cloak
      */
