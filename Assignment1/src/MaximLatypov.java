@@ -128,10 +128,8 @@ public class MaximLatypov {
             return true;
         }
 
-        if ((Exit.getX() == Book.getX()) && (Exit.getY() == Book.getY())){//Exit and Book are in the same cell
-            return true;
-        }
-        return false;
+        //Exit and Book are in the same cell
+        return (Exit.getX() == Book.getX()) && (Exit.getY() == Book.getY());
     }
 
 
@@ -793,7 +791,7 @@ class Actor extends Cell{
 
 
     /**
-     * This is the function that returns the minimum distance from Start to Book and then to Exit.
+     * This is the function that returns the minimum path from Start to Book and then to Exit.
      */
     public static void findShortestPath(Actor Harry, Cell Filch, Cell Cat, Cell Book, Cell Cloak, Cell Exit, int scenario){
         System.out.println("Shortest path: ");
